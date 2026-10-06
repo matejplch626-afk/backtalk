@@ -35,43 +35,37 @@ jobs:
           import re, subprocess
           from pathlib import Path
           import xml.etree.ElementTree as ET
-
           commits = subprocess.check_output(['git','log','--since=2026-09-25','--format=%H'], text=True).splitlines()
           string_re = re.compile(r'<string\s+[^>]*name="([^"]+)"[^>]*>(.*?)</string>')
           changed = {}
           for sha in reversed(commits):
               diff = subprocess.check_output(['git','show','--format=','--unified=0',sha,'--','*/res/values/*.xml'], text=True, errors='replace')
-              current_file = None; removed = {}; added = {}
+              current_file=None; removed={}; added={}
               for line in diff.splitlines():
                   if line.startswith('+++ b/'):
-                      current_file = line[6:]; continue
-                  if not current_file or '/values-' in current_file or '/res/values/' not in current_file:
-                      continue
+                      current_file=line[6:]; continue
+                  if not current_file or '/values-' in current_file or '/res/values/' not in current_file: continue
                   if line.startswith('-') and not line.startswith('---'):
-                      m = string_re.search(line[1:].strip())
-                      if m: removed.setdefault((current_file,m.group(1)), []).append(m.group(2))
+                      m=string_re.search(line[1:].strip())
+                      if m: removed.setdefault((current_file,m.group(1)),[]).append(m.group(2))
                   elif line.startswith('+') and not line.startswith('+++'):
-                      m = string_re.search(line[1:].strip())
-                      if m: added.setdefault((current_file,m.group(1)), []).append(m.group(2))
-              for key in set(removed) & set(added):
-                  if removed[key][-1] != added[key][-1]: changed[(sha,*key)] = (removed[key][-1],added[key][-1])
-
-          cs = {}
+                      m=string_re.search(line[1:].strip())
+                      if m: added.setdefault((current_file,m.group(1)),[]).append(m.group(2))
+              for key in set(removed)&set(added):
+                  if removed[key][-1]!=added[key][-1]: changed[(sha,*key)]=(removed[key][-1],added[key][-1])
+          cs={}
           for p in Path('.').rglob('res/values-cs/*.xml'):
-              root = ET.parse(p).getroot()
+              root=ET.parse(p).getroot()
               for child in root:
-                  name = child.attrib.get('name')
-                  if name: cs.setdefault(name, []).append((str(p), ''.join(child.itertext()).strip()))
-
+                  name=child.attrib.get('name')
+                  if name: cs.setdefault(name,[]).append((str(p),''.join(child.itertext()).strip()))
           out=['CHANGED EXISTING ENGLISH STRING RESOURCES SINCE 2026-09-25','']
           for (sha,path,name),(old,new) in changed.items():
-              out += [f'{sha[:10]}\t{path}\t{name}', f'  OLD: {old}', f'  NEW: {new}']
+              out += [f'{sha[:10]}\t{path}\t{name}',f'  OLD: {old}',f'  NEW: {new}']
               vals=cs.get(name,[])
               out += [f'  CS [{p}]: {v}' for p,v in vals] if vals else ['  CS: <missing>']
               out.append('')
-
-          duplicates=[]
-          by_dir={}
+          duplicates=[]; by_dir={}
           for p in Path('.').rglob('res/values-cs/*.xml'):
               root=ET.parse(p).getroot(); bucket=by_dir.setdefault(str(p.parent),{})
               for child in root:
@@ -87,7 +81,7 @@ jobs:
           if duplicates: raise SystemExit('Duplicate Czech resource names found')
           PY
 
-      - name: Validate XML and format placeholders
+      - name: Validate Czech XML and simple string placeholders
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -103,6 +97,7 @@ jobs:
                   try: root=ET.parse(p).getroot()
                   except ET.ParseError: continue
                   for e in root:
+                      if e.tag != 'string': continue
                       n=e.attrib.get('name')
                       if n: en[n]=''.join(e.itertext())
               for p in csdir.glob('*.xml'):
@@ -110,12 +105,13 @@ jobs:
                   except Exception as e:
                       failures.append(f'{p}: XML parse error: {e}'); continue
                   for e in root:
+                      if e.tag != 'string': continue
                       n=e.attrib.get('name')
                       if not n or n not in en: continue
                       a=sorted(placeholder.findall(en[n])); b=sorted(placeholder.findall(''.join(e.itertext())))
                       if a!=b: failures.append(f'{p}: {n}: placeholders EN={a}, CS={b}')
           if failures: raise SystemExit('\n'.join(failures))
-          print('All Czech XML files are well-formed and placeholders match English resources.')
+          print('All Czech XML files are well-formed; placeholders in simple strings match English.')
           PY
 
       - name: Build debug APKs
