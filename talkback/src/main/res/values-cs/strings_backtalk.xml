@@ -81,4 +81,5 @@
     <string name="value_audio_output_device_usb_headset">USB náhlavní souprava</string>
     <string name="value_audio_output_device_usb_device">USB zvukové zařízení</string>
     <string name="value_audio_output_device_aux_line">Zvukový výstup AUX</string>
+    <string name="pref_category_selector_menu_summary_no_rotor">Přejetím třemi prsty doleva nebo doprava zvolte ovládání čtení. Potom ho změňte přejetím nahoru nebo dolů.</string>
 </resources>
