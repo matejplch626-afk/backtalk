@@ -93,6 +93,7 @@ Under `braille/common/src/phone/res/values-cs/`:
 - `885c622875751031eb4cd52e5233da6779a22eb9` — initial Braille orientation additions
 - `9104fa801add12524d7fa98ed998c6afb19c17e3` — lift activation, wrap-around, rotor gestures, call routing
 - `b823d08891ff36c71329a69ff89b70f2639a2aae` — speech and notification settings
+- `69d6f06647f92ad8ccfadfcb9eb67ed808809d88` — corrected Czech validation workflow; successful audit/build run followed
 
 Additional feature-specific Czech commits were made for sound themes, control sounds, Direct touch, on-device AI, Pause BackTalk, circle menu, updater, Gemini settings/errors, and Braille keyboard settings.
 
@@ -121,16 +122,59 @@ The Czech branch currently includes translations for:
 - sentence-at-a-time long-text mode
 - incoming notification announcements
 
-## Still required before declaring 100% coverage
+## Audit and build status as of 2026-10-06
 
-1. Audit BackTalk commits for existing English resource keys whose meaning changed compared with inherited TalkBack Czech translations.
-2. Update those existing Czech values in their original files where needed.
-3. Check for duplicate resource names across all Czech resource files.
-4. Run XML/AAPT/Gradle validation.
-5. Build a test APK.
-6. Confirm whether the APK package/signing configuration can coexist safely with the system/Google TalkBack before installation testing.
-7. Runtime-test the Czech strings on a real device.
-8. Send clean incremental pull requests to upstream `trypsynth/backtalk`.
+The dedicated GitHub Actions workflow `Czech translation audit and build` completed successfully in run #7.
+
+Successful checks in that run:
+
+- audited changed existing English resource keys
+- applied audited Czech semantic updates
+- verified no duplicate Czech resource names in the checked resource sets
+- validated Czech XML files
+- validated simple-string format placeholders
+- completed the Gradle debug build successfully
+- produced phone and Wear debug APK artifacts
+
+The previous run #6 failed only because the first placeholder validator incorrectly compared plural resources across languages with different plural-form counts. The validator was corrected; run #7 then completed successfully.
+
+The audit also identified a broad upstream branding change from `TalkBack` to `Backtalk` in many inherited strings. These branding-only changes and any remaining semantic changes should be reviewed before the initial upstream Czech PR is considered complete.
+
+## Test APK status
+
+A successful test artifact was produced from GitHub Actions run #7.
+
+Relevant phone APK:
+
+- `backtalk-phone-debug.apk`
+
+Wear build also exists:
+
+- `backtalk-wear-debug.apk`
+
+Application/package configuration has been checked:
+
+- BackTalk application ID: `fyi.quin.backtalk`
+- system/Google TalkBack therefore is not replaced by this package
+- the test build is expected to install alongside system TalkBack as a separate app/accessibility service
+- project build configuration states that published debug builds are signed with a debug key
+
+Current runtime-testing instruction:
+
+1. Install `backtalk-phone-debug.apk`.
+2. Keep the existing/system TalkBack installed and enabled initially.
+3. Confirm Android completes installation without an error.
+4. Open Android accessibility settings and confirm BackTalk appears as a separate accessibility service alongside TalkBack.
+5. Report the result before enabling BackTalk for a longer live test.
+6. After separation is confirmed, begin a controlled real-device Czech localization test.
+
+## Remaining work before declaring 100% coverage
+
+1. Finish review of remaining changed existing keys found by the audit, especially inherited `TalkBack` -> `Backtalk` branding updates and any true semantic changes.
+2. Runtime-test the Czech strings on a real Android device.
+3. Correct any terminology, truncation, missing strings, malformed announcements, or feature-specific issues discovered during runtime testing.
+4. Re-run XML/resource validation and Gradle build after final corrections.
+5. Prepare the initial professional upstream pull request to `trypsynth/backtalk:master`.
 
 ## Maintenance workflow
 
@@ -149,3 +193,30 @@ For every new upstream BackTalk commit or release:
 ## Upstream contribution policy
 
 Prefer small, reviewable pull requests rather than a permanently open mega-PR. After upstream accepts the initial Czech localization, subsequent BackTalk features should normally be delivered as focused Czech translation updates tied to the relevant upstream changes.
+
+## Initial professional upstream PR plan
+
+Do not open the first upstream PR until the Czech localization has passed real-device testing and remaining audit findings have been reviewed.
+
+The initial PR should be professional, compact, and easy to review. It should explain that:
+
+- BackTalk already inherits the large Czech localization from Google TalkBack
+- this contribution adds and updates Czech strings specifically needed by BackTalk
+- new BackTalk-only keys are isolated in feature-specific Czech resource files where practical
+- inherited Czech strings are edited only where BackTalk changed the meaning or branding of an existing English key
+- Android placeholders, XLIFF markup, plural rules, escaping, and XML semantics were preserved
+- the Czech resources passed automated XML/resource validation and a real Gradle debug build
+- the localization was tested by a native Czech speaker who is also a daily screen-reader user
+
+Long-term maintenance offer for the upstream developers:
+
+- Matěj Plch is willing to act as the Czech localization maintainer/contact
+- upstream developers do not need to translate Czech themselves
+- when BackTalk adds or changes user-visible English strings, focused Czech follow-up PRs can be submitted promptly
+- the preferred model is one coherent initial Czech PR followed by small incremental maintenance PRs
+
+Suggested wording for the first PR description or accompanying message:
+
+> Czech localization is maintained continuously. I am a native Czech speaker and daily screen reader user. I can keep Backtalk-specific Czech strings updated as new features are added. You don't need to maintain the Czech translations yourself; I will submit small follow-up pull requests whenever English user-facing strings change.
+
+This upstream-maintainer relationship is a project goal and should remain part of future planning.
