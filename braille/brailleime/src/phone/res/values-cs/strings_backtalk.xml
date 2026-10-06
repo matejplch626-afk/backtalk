@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <!-- Backtalk-specific Czech translations for the braille keyboard. -->
+
+    <string name="screen_toward_announcement">Obrazovka směrem k vám</string>
+    <string name="screen_toward_port_left_announcement">Obrazovka směrem k vám, nabíjecí port vlevo</string>
+    <string name="screen_toward_port_right_announcement">Obrazovka směrem k vám, nabíjecí port vpravo</string>
+    <string name="screen_toward_port_down_announcement">Obrazovka směrem k vám, nabíjecí port směřuje dolů</string>
+    <string name="screen_toward_port_up_announcement">Obrazovka směrem k vám, nabíjecí port směřuje nahoru</string>
+
+    <string name="title_pref_tablet_held_up_faces_away">Tablet ve vzpřímené poloze směřuje od vás</string>
+    <string name="summary_pref_tablet_held_up_faces_away">Je-li vypnuto, tablet nebo rozložený telefon ve vzpřímené poloze používá stolní režim s obrazovkou směrem k vám.</string>
+</resources>
