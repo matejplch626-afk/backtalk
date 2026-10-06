@@ -3,6 +3,8 @@ name: Czech translation audit and build
 on:
   push:
     branches: [czech-translation]
+  pull_request:
+    branches: [czech-translation]
   workflow_dispatch:
 
 permissions:
@@ -37,7 +39,6 @@ jobs:
               ['git','log',f'--since={since}','--format=%H'], text=True
           ).splitlines()
 
-          value_file_re = re.compile(r'(^|/)res/values/[^/]*\.xml$|(^|/)res/values/strings[^/]*\.xml$')
           string_re = re.compile(r'<string\s+[^>]*name="([^"]+)"[^>]*>(.*?)</string>')
           changed = {}
 
@@ -72,7 +73,6 @@ jobs:
                   if old != new:
                       changed[(sha,key[0],key[1])] = (old,new)
 
-          # Build index of current Czech string values from all values-cs XML files.
           cs = {}
           for p in Path('.').rglob('res/values-cs/*.xml'):
               try:
@@ -101,7 +101,6 @@ jobs:
                   out.append('  CS: <missing>')
               out.append('')
 
-          # Duplicate names within each module/qualifier are resource errors even if in separate files.
           duplicates = []
           by_dir = {}
           for p in Path('.').rglob('res/values-cs/*.xml'):
