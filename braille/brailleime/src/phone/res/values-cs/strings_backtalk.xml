@@ -2,6 +2,24 @@
 <resources>
     <!-- Backtalk-specific Czech translations for the braille keyboard. -->
 
+    <string name="tabletop_port_left_announcement">Stolní režim, nabíjecí port vlevo</string>
+    <string name="tabletop_port_right_announcement">Stolní režim, nabíjecí port vpravo</string>
+    <string name="screen_away_port_right_announcement">Režim s obrazovkou od vás, nabíjecí port vpravo</string>
+    <string name="screen_away_port_left_announcement">Režim s obrazovkou od vás, nabíjecí port vlevo</string>
+    <string name="port_right_announcement">Nabíjecí port vpravo</string>
+    <string name="port_left_announcement">Nabíjecí port vlevo</string>
+    <string name="tabletop_port_near_announcement">Stolní režim, nabíjecí port směrem k vám</string>
+    <string name="tabletop_port_far_announcement">Stolní režim, nabíjecí port směrem od vás</string>
+    <string name="screen_away_port_down_announcement">Režim s obrazovkou od vás, nabíjecí port směřuje dolů</string>
+    <string name="screen_away_port_up_announcement">Režim s obrazovkou od vás, nabíjecí port směřuje nahoru</string>
+    <string name="port_near_announcement">Nabíjecí port směrem k vám</string>
+    <string name="port_far_announcement">Nabíjecí port směrem od vás</string>
+    <string name="port_down_announcement">Nabíjecí port směřuje dolů</string>
+    <string name="port_up_announcement">Nabíjecí port směřuje nahoru</string>
+    <string name="orientation_locked_announcement">Orientace uzamčena</string>
+    <string name="orientation_locked_port_announcement">Orientace uzamčena. %1$s</string>
+    <string name="orientation_unlocked_announcement">Orientace odemčena</string>
+
     <string name="screen_toward_announcement">Obrazovka směrem k vám</string>
     <string name="screen_toward_port_left_announcement">Obrazovka směrem k vám, nabíjecí port vlevo</string>
     <string name="screen_toward_port_right_announcement">Obrazovka směrem k vám, nabíjecí port vpravo</string>
