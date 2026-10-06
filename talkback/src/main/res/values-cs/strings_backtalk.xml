@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <!-- Backtalk-specific Czech translations. -->
+
+    <!-- Reduce delays: switch that plays sounds and speech through the fastest audio path. -->
+    <string name="title_pref_low_latency_audio">Zvuk s nízkou latencí</string>
+    <!-- Reduce delays: summary of the low-latency audio switch. -->
+    <string name="summary_pref_low_latency_audio">Přehrávat zvuky a řeč Backtalku nejrychlejší zvukovou cestou telefonu, abyste je slyšeli dříve. Pokud se řeč nebo zvuky trhají či znějí nesprávně, tuto možnost vypněte.</string>
+
+    <!-- Text-to-speech: automatically follow language marks supplied by apps. -->
+    <string name="title_pref_switch_languages">Automaticky přepínat jazyk</string>
+    <!-- Text-to-speech: automatically follow regional variants of the current language. -->
+    <string name="title_pref_switch_dialects">Automaticky přepínat dialekt</string>
+</resources>
