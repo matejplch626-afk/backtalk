@@ -4,11 +4,44 @@
 
     <!-- Reduce delays: switch that plays sounds and speech through the fastest audio path. -->
     <string name="title_pref_low_latency_audio">Zvuk s nízkou latencí</string>
-    <!-- Reduce delays: summary of the low-latency audio switch. -->
     <string name="summary_pref_low_latency_audio">Přehrávat zvuky a řeč Backtalku nejrychlejší zvukovou cestou telefonu, abyste je slyšeli dříve. Pokud se řeč nebo zvuky trhají či znějí nesprávně, tuto možnost vypněte.</string>
 
     <!-- Text-to-speech: automatically follow language marks supplied by apps. -->
     <string name="title_pref_switch_languages">Automaticky přepínat jazyk</string>
-    <!-- Text-to-speech: automatically follow regional variants of the current language. -->
     <string name="title_pref_switch_dialects">Automaticky přepínat dialekt</string>
+
+    <!-- Screen announcements. -->
+    <string name="title_pref_screen_announcements">Zapnutí a vypnutí obrazovky</string>
+    <string name="summary_pref_screen_announcements">Zvolte, co Backtalk oznamuje při vypnutí nebo zapnutí obrazovky a při odemknutí telefonu</string>
+    <string name="title_screen_announcements_screen_off">Při vypnutí obrazovky</string>
+    <string name="title_screen_announcements_screen_on">Při zapnutí obrazovky</string>
+    <string name="title_screen_announcements_unlock">Při odemknutí telefonu</string>
+    <string name="title_pref_say_screen_off">Říkat „Obrazovka vypnuta“</string>
+    <string name="title_pref_say_device_unlocked">Říkat „Zařízení odemknuto“</string>
+    <string name="title_pref_announce_time">Čas</string>
+    <string name="title_pref_announce_ringer_mode">Režim vyzvánění</string>
+    <string name="summary_pref_announce_ringer_mode">Oznamovat, když je vyzvánění nastaveno na vibrace nebo tichý režim</string>
+
+    <!-- Rotor turn per step. -->
+    <string name="title_pref_rotor_step_degrees">Otočení rotoru na jeden krok</string>
+    <string name="value_rotor_step_15">15 stupňů</string>
+    <string name="value_rotor_step_20">20 stupňů</string>
+    <string name="value_rotor_step_30">30 stupňů (výchozí)</string>
+    <string name="value_rotor_step_45">45 stupňů</string>
+    <string name="value_rotor_step_60">60 stupňů</string>
+
+    <!-- Audio output device routing. -->
+    <string name="title_pref_audio_output_device">Výstupní zvukové zařízení</string>
+    <string name="dialog_title_audio_output_device">Zvolte, kde se má přehrávat zvuk Backtalku</string>
+    <string name="value_audio_output_device_default">Výchozí nastavení systému</string>
+    <string name="value_audio_output_device_speaker">Reproduktor telefonu</string>
+    <string name="value_audio_output_device_bluetooth_or_wired">Připojené Bluetooth nebo kabelové zařízení</string>
+    <string name="value_audio_output_device_none_connected">Bluetooth nebo kabelové zařízení (žádné není připojeno)</string>
+    <string name="value_audio_output_device_disconnected">odpojeno</string>
+    <string name="value_audio_output_device_bluetooth_default">Zvukové zařízení Bluetooth</string>
+    <string name="value_audio_output_device_wired_headset">Kabelová náhlavní souprava</string>
+    <string name="value_audio_output_device_wired_headphones">Kabelová sluchátka</string>
+    <string name="value_audio_output_device_usb_headset">USB náhlavní souprava</string>
+    <string name="value_audio_output_device_usb_device">USB zvukové zařízení</string>
+    <string name="value_audio_output_device_aux_line">Zvukový výstup AUX</string>
 </resources>
