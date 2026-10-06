@@ -5,18 +5,19 @@
     <!-- Reduce delays. -->
     <string name="title_pref_low_latency_audio">Zvuk s nízkou latencí</string>
     <string name="summary_pref_low_latency_audio">Přehrávat zvuky a řeč Backtalku nejrychlejší zvukovou cestou telefonu, abyste je slyšeli dříve. Pokud se řeč nebo zvuky trhají či znějí nesprávně, tuto možnost vypněte.</string>
+    <string name="pref_reduce_window_delay_summary">Když jsou animace vypnuté, Backtalk čte nové obrazovky rychleji. Tato možnost vypne animace v celém telefonu.</string>
 
     <!-- Text-to-speech. -->
     <string name="title_pref_switch_languages">Automaticky přepínat jazyk</string>
     <string name="title_pref_switch_dialects">Automaticky přepínat dialekt</string>
     <string name="title_pref_tts_engine">Modul převodu textu na řeč</string>
     <string name="title_pref_system_tts_settings">Systémová nastavení převodu textu na řeč</string>
-    <string name="title_selector_switch_tts_engine">Přepnout modul převodu textu na řeč</string>
-    <string name="summary_selector_switch_tts_engine">Procházet nainstalované moduly převodu textu na řeč</string>
+    <string name="title_selector_switch_tts_engine">Hlasový modul</string>
+    <string name="summary_selector_switch_tts_engine">Přepínat mezi nainstalovanými hlasovými moduly</string>
     <string name="summary_pref_tts_engine_default">Výchozí systémový modul</string>
     <string name="title_pref_speech_pitch">Výška hlasu</string>
-    <string name="title_pref_use_accessibility_stream">Používat zvukový kanál přístupnosti</string>
-    <string name="summary_pref_use_accessibility_stream">Směrovat řeč Backtalku do samostatného zvukového kanálu přístupnosti, aby bylo možné nezávisle ovládat hlasitost</string>
+    <string name="title_pref_use_accessibility_stream">Používat hlasitost přístupnosti</string>
+    <string name="summary_pref_use_accessibility_stream">Řeč a zvuky používají hlasitost přístupnosti, takže je můžete nastavit nezávisle na médiích. Je-li tato možnost vypnutá, používají hlasitost médií.</string>
     <string name="title_pref_speak_in_phrases">Odesílat dlouhý text po větách</string>
     <string name="summary_pref_speak_in_phrases">Pro hlasové moduly, které se zastavují pomalu, například Gryphon, aby se dlouhý text po přejetí zastavil ihned. Mnoho modulů při samostatně odesílaných větách dělá delší pauzy, proto tuto možnost ponechte vypnutou, pokud se váš modul zastavuje rychle.</string>
 
