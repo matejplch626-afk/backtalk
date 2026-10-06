@@ -70,4 +70,9 @@
     <string name="on_device_ai_metered_message">Model má několik gigabajtů. Vhodnější je Wi-Fi.</string>
     <string name="on_device_ai_metered_download">Stáhnout</string>
     <string name="on_device_ai_cancel">Zrušit</string>
+
+    <string name="title_pref_on_device_ai_ignore_memory_limits">Ignorovat paměťové limity AI v zařízení</string>
+    <string name="summary_pref_on_device_ai_ignore_memory_limits">Umožní zvolit model, který vyžaduje více paměti, než telefon má, a načíst jej bez kontroly volné paměti, abyste mohli otestovat, co se stane, když jej Android ukončí.</string>
+    <string name="on_device_ai_not_enough_memory">Pro %1$s není dostatek volné paměti. Zavřete některé aplikace nebo v nastavení AI v zařízení zvolte menší model.</string>
+    <string name="on_device_ai_stopped">%1$s se zastavil, pravděpodobně proto, že telefonu došla paměť. V nastavení AI v zařízení zvolte menší model.</string>
 </resources>
