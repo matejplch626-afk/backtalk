@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   audit-build:
@@ -25,128 +25,112 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v6
 
+      - name: Apply audited Czech semantic updates
+        run: python3 tools/apply_czech_existing_string_updates.py
+
       - name: Audit changed existing translatable resources
         shell: bash
         run: |
           python3 - <<'PY'
-          import re
-          import subprocess
+          import re, subprocess
           from pathlib import Path
           import xml.etree.ElementTree as ET
 
-          since = '2026-09-25'
-          commits = subprocess.check_output(
-              ['git','log',f'--since={since}','--format=%H'], text=True
-          ).splitlines()
-
+          commits = subprocess.check_output(['git','log','--since=2026-09-25','--format=%H'], text=True).splitlines()
           string_re = re.compile(r'<string\s+[^>]*name="([^"]+)"[^>]*>(.*?)</string>')
           changed = {}
-
           for sha in reversed(commits):
-              parent = subprocess.run(['git','rev-parse',f'{sha}^'], text=True, capture_output=True)
-              if parent.returncode != 0:
-                  continue
-              diff = subprocess.check_output(
-                  ['git','show','--format=','--unified=0',sha,'--','*/src/*/res/values/*.xml','*/res/values/*.xml'],
-                  text=True, errors='replace'
-              )
-              current_file = None
-              removed = {}
-              added = {}
+              diff = subprocess.check_output(['git','show','--format=','--unified=0',sha,'--','*/res/values/*.xml'], text=True, errors='replace')
+              current_file = None; removed = {}; added = {}
               for line in diff.splitlines():
                   if line.startswith('+++ b/'):
-                      current_file = line[6:]
-                      continue
-                  if not current_file or '/values-' in current_file or not '/res/values/' in current_file:
+                      current_file = line[6:]; continue
+                  if not current_file or '/values-' in current_file or '/res/values/' not in current_file:
                       continue
                   if line.startswith('-') and not line.startswith('---'):
                       m = string_re.search(line[1:].strip())
-                      if m:
-                          removed.setdefault((current_file,m.group(1)), []).append(m.group(2))
+                      if m: removed.setdefault((current_file,m.group(1)), []).append(m.group(2))
                   elif line.startswith('+') and not line.startswith('+++'):
                       m = string_re.search(line[1:].strip())
-                      if m:
-                          added.setdefault((current_file,m.group(1)), []).append(m.group(2))
+                      if m: added.setdefault((current_file,m.group(1)), []).append(m.group(2))
               for key in set(removed) & set(added):
-                  old = removed[key][-1]
-                  new = added[key][-1]
-                  if old != new:
-                      changed[(sha,key[0],key[1])] = (old,new)
+                  if removed[key][-1] != added[key][-1]: changed[(sha,*key)] = (removed[key][-1],added[key][-1])
 
           cs = {}
           for p in Path('.').rglob('res/values-cs/*.xml'):
-              try:
-                  root = ET.parse(p).getroot()
-              except Exception as e:
-                  print(f'XML_PARSE_ERROR\t{p}\t{e}')
-                  continue
+              root = ET.parse(p).getroot()
               for child in root:
                   name = child.attrib.get('name')
-                  if name:
-                      text = ''.join(child.itertext()).strip()
-                      cs.setdefault(name, []).append((str(p), text))
+                  if name: cs.setdefault(name, []).append((str(p), ''.join(child.itertext()).strip()))
 
-          out = []
-          out.append('CHANGED EXISTING ENGLISH STRING RESOURCES SINCE 2026-09-25')
-          out.append('')
+          out=['CHANGED EXISTING ENGLISH STRING RESOURCES SINCE 2026-09-25','']
           for (sha,path,name),(old,new) in changed.items():
-              out.append(f'{sha[:10]}\t{path}\t{name}')
-              out.append(f'  OLD: {old}')
-              out.append(f'  NEW: {new}')
-              vals = cs.get(name, [])
-              if vals:
-                  for cp,cv in vals:
-                      out.append(f'  CS [{cp}]: {cv}')
-              else:
-                  out.append('  CS: <missing>')
+              out += [f'{sha[:10]}\t{path}\t{name}', f'  OLD: {old}', f'  NEW: {new}']
+              vals=cs.get(name,[])
+              out += [f'  CS [{p}]: {v}' for p,v in vals] if vals else ['  CS: <missing>']
               out.append('')
 
-          duplicates = []
-          by_dir = {}
+          duplicates=[]
+          by_dir={}
           for p in Path('.').rglob('res/values-cs/*.xml'):
-              try:
-                  root = ET.parse(p).getroot()
-              except Exception:
-                  continue
-              d = str(p.parent)
-              bucket = by_dir.setdefault(d,{})
+              root=ET.parse(p).getroot(); bucket=by_dir.setdefault(str(p.parent),{})
               for child in root:
-                  name = child.attrib.get('name')
-                  if name:
-                      bucket.setdefault(name,[]).append(str(p))
+                  name=child.attrib.get('name')
+                  if name: bucket.setdefault(name,[]).append(str(p))
           for d,bucket in by_dir.items():
               for name,paths in bucket.items():
-                  if len(paths) > 1:
-                      duplicates.append((d,name,paths))
-          out.append('DUPLICATE CZECH RESOURCE NAMES')
-          if duplicates:
-              for d,name,paths in duplicates:
-                  out.append(f'{d}\t{name}\t' + ' | '.join(paths))
-          else:
-              out.append('None')
-
-          Path('czech-audit.txt').write_text('\n'.join(out), encoding='utf-8')
+                  if len(paths)>1: duplicates.append((d,name,paths))
+          out += ['DUPLICATE CZECH RESOURCE NAMES']
+          out += [f'{d}\t{name}\t'+' | '.join(paths) for d,name,paths in duplicates] if duplicates else ['None']
+          Path('czech-audit.txt').write_text('\n'.join(out),encoding='utf-8')
           print('\n'.join(out))
+          if duplicates: raise SystemExit('Duplicate Czech resource names found')
           PY
 
-      - name: Validate XML files
+      - name: Validate XML and format placeholders
         run: |
           python3 - <<'PY'
           from pathlib import Path
+          import re
           import xml.etree.ElementTree as ET
+          placeholder=re.compile(r'%(?:\d+\$)?[a-zA-Z]')
           failures=[]
-          for p in Path('.').rglob('res/values-cs/*.xml'):
-              try:
-                  ET.parse(p)
-              except Exception as e:
-                  failures.append(f'{p}: {e}')
-          if failures:
-              raise SystemExit('\n'.join(failures))
-          print('All Czech values XML files are well-formed.')
+          for csdir in Path('.').rglob('res/values-cs'):
+              default=csdir.parent/'values'
+              if not default.is_dir(): continue
+              en={}
+              for p in default.glob('*.xml'):
+                  try: root=ET.parse(p).getroot()
+                  except ET.ParseError: continue
+                  for e in root:
+                      n=e.attrib.get('name')
+                      if n: en[n]=''.join(e.itertext())
+              for p in csdir.glob('*.xml'):
+                  try: root=ET.parse(p).getroot()
+                  except Exception as e:
+                      failures.append(f'{p}: XML parse error: {e}'); continue
+                  for e in root:
+                      n=e.attrib.get('name')
+                      if not n or n not in en: continue
+                      a=sorted(placeholder.findall(en[n])); b=sorted(placeholder.findall(''.join(e.itertext())))
+                      if a!=b: failures.append(f'{p}: {n}: placeholders EN={a}, CS={b}')
+          if failures: raise SystemExit('\n'.join(failures))
+          print('All Czech XML files are well-formed and placeholders match English resources.')
           PY
 
       - name: Build debug APKs
         run: ./gradlew assembleDebug --console=plain
+
+      - name: Commit audited Czech updates back to translation branch
+        if: github.event_name == 'push' && github.ref == 'refs/heads/czech-translation'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add talkback/src/main/res/values-cs braille/brailleime/src/phone/res/values-cs
+          if ! git diff --cached --quiet; then
+            git commit -m 'Update existing Czech strings for Backtalk semantics'
+            git push origin HEAD:czech-translation
+          fi
 
       - uses: actions/upload-artifact@v7
         if: always()
