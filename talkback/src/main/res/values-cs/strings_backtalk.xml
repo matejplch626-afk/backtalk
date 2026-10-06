@@ -2,13 +2,27 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <!-- Backtalk-specific Czech translations. -->
 
-    <!-- Reduce delays: switch that plays sounds and speech through the fastest audio path. -->
+    <!-- Reduce delays. -->
     <string name="title_pref_low_latency_audio">Zvuk s nízkou latencí</string>
     <string name="summary_pref_low_latency_audio">Přehrávat zvuky a řeč Backtalku nejrychlejší zvukovou cestou telefonu, abyste je slyšeli dříve. Pokud se řeč nebo zvuky trhají či znějí nesprávně, tuto možnost vypněte.</string>
 
-    <!-- Text-to-speech: automatically follow language marks supplied by apps. -->
+    <!-- Text-to-speech. -->
     <string name="title_pref_switch_languages">Automaticky přepínat jazyk</string>
     <string name="title_pref_switch_dialects">Automaticky přepínat dialekt</string>
+    <string name="title_pref_tts_engine">Modul převodu textu na řeč</string>
+    <string name="title_pref_system_tts_settings">Systémová nastavení převodu textu na řeč</string>
+    <string name="title_selector_switch_tts_engine">Přepnout modul převodu textu na řeč</string>
+    <string name="summary_selector_switch_tts_engine">Procházet nainstalované moduly převodu textu na řeč</string>
+    <string name="summary_pref_tts_engine_default">Výchozí systémový modul</string>
+    <string name="title_pref_speech_pitch">Výška hlasu</string>
+    <string name="title_pref_use_accessibility_stream">Používat zvukový kanál přístupnosti</string>
+    <string name="summary_pref_use_accessibility_stream">Směrovat řeč Backtalku do samostatného zvukového kanálu přístupnosti, aby bylo možné nezávisle ovládat hlasitost</string>
+    <string name="title_pref_speak_in_phrases">Odesílat dlouhý text po větách</string>
+    <string name="summary_pref_speak_in_phrases">Pro hlasové moduly, které se zastavují pomalu, například Gryphon, aby se dlouhý text po přejetí zastavil ihned. Mnoho modulů při samostatně odesílaných větách dělá delší pauzy, proto tuto možnost ponechte vypnutou, pokud se váš modul zastavuje rychle.</string>
+
+    <!-- Incoming notifications. -->
+    <string name="title_pref_speak_notifications">Oznamovat příchozí oznámení</string>
+    <string name="summary_pref_speak_notifications">Číst nová oznámení nahlas, když přijdou</string>
 
     <!-- Screen announcements. -->
     <string name="title_pref_screen_announcements">Zapnutí a vypnutí obrazovky</string>
