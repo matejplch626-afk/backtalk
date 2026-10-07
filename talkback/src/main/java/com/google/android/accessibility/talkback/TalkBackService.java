@@ -2469,13 +2469,18 @@ public class TalkBackService extends AccessibilityServiceCompat
             new TalkBackPrivateMethodProvider() {
               @Override
               public void requestTouchExploration(boolean enabled) {
-                TouchInteractionMonitor touchInteractionMonitor =
-                    displayIdToTouchInteractionMonitors.get(Display.DEFAULT_DISPLAY);
-                if (FeatureSupport.supportGestureDetection() && touchInteractionMonitor != null) {
-                  touchInteractionMonitor.requestA11yTouchExploreState(enabled);
-                } else {
-                  getInstance().requestTouchExploration(enabled);
+                // TouchInteractionMonitor implements a callback from Android 13, so it cannot even
+                // be loaded before then. Getting it before the check crashed the braille keyboard
+                // on older Android, as it turns off touch exploration when it opens.
+                if (FeatureSupport.supportGestureDetection()) {
+                  TouchInteractionMonitor touchInteractionMonitor =
+                      displayIdToTouchInteractionMonitors.get(Display.DEFAULT_DISPLAY);
+                  if (touchInteractionMonitor != null) {
+                    touchInteractionMonitor.requestA11yTouchExploreState(enabled);
+                    return;
+                  }
                 }
+                getInstance().requestTouchExploration(enabled);
               }
 
               @Override
@@ -3275,6 +3280,9 @@ public class TalkBackService extends AccessibilityServiceCompat
     boolean auditoryEnabled =
         getBooleanPref(R.string.pref_soundback_key, R.bool.pref_soundback_default);
     feedbackController.setAuditoryEnabled(auditoryEnabled);
+    // Before the theme's sounds are loaded below, so that they load with the new volume.
+    feedbackController.setUseAccessibilityStream(
+        FailoverTextToSpeech.shouldUseAccessibilityStream(this));
     feedbackController.setLowLatencyAudio(
         prefs.getBoolean(
             FailoverTextToSpeech.PREF_LOW_LATENCY_AUDIO_KEY,

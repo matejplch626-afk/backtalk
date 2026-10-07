@@ -78,7 +78,7 @@
       Description: Explains that enabling this routes TalkBack speech through the accessibility stream,
       allowing independent volume control. [CHAR LIMIT=NONE]
     -->
-    <string name="summary_pref_use_accessibility_stream">Speech uses the accessibility volume, so you can set it apart from media. When off, speech uses the media volume.</string>
+    <string name="summary_pref_use_accessibility_stream">Speech and sounds use the accessibility volume, so you can set them apart from media. When off, they use the media volume.</string>
     <!--
       Source: Title for the "speak long text in phrases" toggle.
       Description: When on, Backtalk sends long text to the speech engine as separate phrases. [CHAR LIMIT=NONE]
@@ -444,6 +444,10 @@
       Description: Explains that element IDs will be spoken for unlabeled buttons. [CHAR LIMIT=NONE]
     -->
     <string name="summary_pref_speak_element_ids">Say the ID of buttons that have no label</string>
+    <!-- Verbosity: switch for speaking the new volume after the user changes it with the volume keys. [CHAR LIMIT=NONE] -->
+    <string name="title_pref_speak_volume_changes">Speak volume changes</string>
+    <!-- Verbosity: summary of the switch for speaking volume changes. [CHAR LIMIT=NONE] -->
+    <string name="summary_pref_speak_volume_changes">Say the new volume after you press the volume keys</string>
     <!--
       Source: Preference for speaking notifications as they arrive.
       Description: The user can turn this off to stop new notifications from being read aloud. [CHAR LIMIT=NONE]
@@ -2292,6 +2296,15 @@ Description: Explain that the feature is enabled for all images. [CHAR_LIMIT=NON
     <string name="wrap_around_on">Wrap around on</string>
     <!-- Spoken when wrap around is turned off. [CHAR LIMIT=NONE]-->
     <string name="wrap_around_off">Wrap around off</string>
+
+    <!-- Title of the reading control for the braille keyboard setting that takes a tablet or unfolded phone held up to be held with the screen facing away from the user. When off, it is taken to face the user and uses the tabletop layout. [CHAR LIMIT=NONE]-->
+    <string name="title_selector_tablet_held_up_faces_away">Tablet held up faces away</string>
+    <!-- Summary of the tablet held up faces away setting in the reading controls list. [CHAR LIMIT=NONE]-->
+    <string name="summary_support_tablet_held_up_faces_away">For the braille keyboard on a tablet or unfolded phone</string>
+    <!-- Spoken when the tablet held up faces away setting is turned on. [CHAR LIMIT=NONE]-->
+    <string name="tablet_held_up_faces_away_on">Tablet held up faces away on</string>
+    <!-- Spoken when the tablet held up faces away setting is turned off. [CHAR LIMIT=NONE]-->
+    <string name="tablet_held_up_faces_away_off">Tablet held up faces away off</string>
 
     <!-- Label for the preference specifying that the shake to read feature is disabled. -->
     <string name="value_shake_to_read_disabled">Disabled</string>
