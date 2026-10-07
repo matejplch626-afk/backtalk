@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="title_pref_emoji_speech">Emodži</string>
+  <string name="emoji_speech_engine">Číst pomocí hlasového syntetizéru</string>
+  <string name="emoji_speech_names">Číst pomocí Backtalku</string>
+  <string name="emoji_speech_none">Nečíst</string>
+  <string name="summary_selector_menu_emoji">Změnit způsob čtení emodži</string>
+  <string name="emoji_speech_state">Emodži: <xliff:g example="Číst pomocí Backtalku" id="state">%1$s</xliff:g></string>
+  <string name="title_pref_emoji_repeat_count">Počítat opakující se emodži</string>
+  <string name="emoji_repeat_count_off">Vypnuto</string>
+  <string name="emoji_repeat_count_2">2 nebo více</string>
+  <string name="emoji_repeat_count_3">3 nebo více</string>
+  <string name="emoji_repeat_count_4">4 nebo více</string>
+  <string name="emoji_repeat_count_5">5 nebo více</string>
+  <string name="emoji_repeat_count_6">6 nebo více</string>
+</resources>
