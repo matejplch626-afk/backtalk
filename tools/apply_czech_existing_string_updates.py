@@ -26,7 +26,7 @@ def replace_strings(path: str, replacements: dict[str, str]) -> None:
 def add_string_if_missing(path: str, key: str, value: str) -> None:
     p = Path(path)
     text = p.read_text(encoding="utf-8")
-    if re.search(rf'<string\s+name="{re.escape(key)}"\b', text):
+    if re.search(rf'<string\s+name="{re.escape(key)}"(?=[\s>])', text):
         return
     marker = "</resources>"
     if text.count(marker) != 1:
