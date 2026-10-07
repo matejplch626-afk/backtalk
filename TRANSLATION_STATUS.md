@@ -8,7 +8,7 @@ This file is the continuity anchor for the Czech localization of BackTalk.
 - Upstream branch: `master`
 - Czech fork: `matejplch626-afk/backtalk`
 - Working branch: `czech-translation`
-- Last upstream commit checked: `5e2fae60d1c2ed3f057db938ee9b46268a82daf4` (`Let each braille keyboard vibration be turned off on its own (#89)`, 2026-10-07)
+- Last upstream commit checked: `348917379a54f31fda51f6b1d413af89062af5d5` (`Build native code for x86_64 too (#93)`, 2026-10-07)
 
 ## Localization strategy
 
@@ -41,6 +41,7 @@ Under `talkback/src/main/res/values-cs/`:
 - `strings_gemini_api_key.xml` — Gemini API key settings
 - `strings_gemini_errors.xml` — Gemini API/quota errors
 - `strings_individual_feedback.xml` — individual sounds/vibrations, including six independently switchable Braille keyboard vibrations added upstream in #89
+- `strings_emoji.xml` — emoji speech mode and repeated-emoji controls added upstream in #72
 
 ### Braille IME
 
@@ -58,8 +59,13 @@ Under `braille/common/src/phone/res/values-cs/`, `strings_backtalk.xml` covers t
 - `b823d08891ff36c71329a69ff89b70f2639a2aae` — speech and notification settings
 - `69d6f06647f92ad8ccfadfcb9eb67ed808809d88` — corrected Czech validation workflow; successful audit/build run followed
 - `169a66615d7cc65de4b11c3db6605d35043769b8` — Czech labels for six new Braille keyboard vibration controls from upstream #89
+- `4b87efbc611b8780f801a101f10385e9b16af417` — Czech strings for the new emoji speech and repeated-emoji settings from upstream #72
 
 ## Upstream watch log
+
+### 2026-10-07 — through `348917379a54f31fda51f6b1d413af89062af5d5`
+
+Upstream advanced by 4 commits from `5e2fae60d1c2ed3f057db938ee9b46268a82daf4`. Commit #72 added a user-visible Emoji setting with three speech modes, a reading-control/menu state announcement, and a repeated-emoji threshold setting. Thirteen Czech strings were added in `strings_emoji.xml`, preserving the `%1$s` XLIFF placeholder in `emoji_speech_state`. The other three commits changed Gemini/audio behavior, Braille tabletop orientation logic, and x86_64 build support without adding translatable user-visible resources.
 
 ### 2026-10-07 — through `5e2fae60d1c2ed3f057db938ee9b46268a82daf4`
 
@@ -76,27 +82,24 @@ New Czech labels:
 
 ## Completed BackTalk-specific areas
 
-The Czech branch includes translations for sound themes, control sounds/vibrations, 3D audio, custom sounds, screen/tabletop orientation, audio routing, rotor behavior, lift-to-activate, wrap-around navigation, proximity speakerphone behavior, Direct touch, on-device AI, Gemini settings/errors, Pause BackTalk, circle menu, updater, Braille keyboard additions, TTS options, sentence-at-a-time mode, incoming notifications, and individual Braille keyboard vibration controls.
+The Czech branch includes translations for sound themes, control sounds/vibrations, 3D audio, custom sounds, screen/tabletop orientation, audio routing, rotor behavior, lift-to-activate, wrap-around navigation, proximity speakerphone behavior, Direct touch, on-device AI, Gemini settings/errors, Pause BackTalk, circle menu, updater, Braille keyboard additions, TTS options, sentence-at-a-time mode, incoming notifications, individual Braille keyboard vibration controls, and emoji speech controls.
 
 ## Audit and build status
 
-GitHub Actions workflow `Czech translation audit and build` completed successfully in run #7 on 2026-10-06. It audited changed existing English keys, applied Czech semantic updates, checked duplicate Czech resource names, validated XML and simple-string placeholders, completed the Gradle debug build, and produced phone/Wear APK artifacts.
-
-The audit also identified broad inherited branding changes from `TalkBack` to `Backtalk`; remaining branding-only and semantic changes should be reviewed before the initial upstream Czech PR.
+GitHub Actions workflow `Czech translation audit and build` completed successfully in run #18 on 2026-10-07. It audited changed existing English keys, checked duplicate Czech resource names, validated XML and simple-string placeholders, completed the Gradle debug build, and produced APK artifacts. A new validation run is expected after the emoji localization commit.
 
 ## Test APK status
 
-A successful test artifact was produced from run #7: `backtalk-phone-debug.apk` plus a Wear build. BackTalk application ID is `fyi.quin.backtalk`, so it is expected to install alongside system/Google TalkBack as a separate accessibility service. Published debug builds use a debug signing key.
+Successful test artifacts have been produced by the Czech audit/build workflow, including a phone debug APK and Wear build. BackTalk application ID is `fyi.quin.backtalk`, so it is expected to install alongside system/Google TalkBack as a separate accessibility service. Published debug builds use a debug signing key.
 
 Runtime test sequence: install the phone APK, keep system TalkBack enabled initially, confirm BackTalk appears separately in Android accessibility settings, then begin controlled Czech localization testing.
 
 ## Remaining work before declaring 100% coverage
 
-1. Finish review of remaining changed existing keys, especially inherited `TalkBack` → `Backtalk` branding and semantic changes.
-2. Runtime-test Czech strings on a real Android device.
-3. Correct terminology, truncation, missing strings, malformed announcements, or feature-specific issues found in testing.
-4. Re-run validation/build after final corrections and after syncing current upstream code.
-5. Prepare the initial professional upstream PR to `trypsynth/backtalk:master`.
+1. Runtime-test Czech strings on a real Android device.
+2. Correct terminology, truncation, missing strings, malformed announcements, or feature-specific issues found in testing.
+3. Re-run validation/build after final corrections and after syncing current upstream code.
+4. Prepare the initial professional upstream PR to `trypsynth/backtalk:master`.
 
 ## Maintenance workflow
 
