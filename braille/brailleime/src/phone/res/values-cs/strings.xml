@@ -45,8 +45,8 @@
   <string name="switch_input_code_gesture_tip_dialog_message">Pokud při psaní na braillské klávesnici chcete změnit jazyk, přejeďte třemi prsty nahoru. Poté vyberte Přepnout na další jazyk.</string>
   <string name="title_pref_accumulate_presses">Zahrnout všechny stisknuté body</string>
   <string name="summary_pref_accumulate_presses">Každý stisknutý bod je součástí vstupu i v případě, že byl před stisknutím dalších bodů uvolněn</string>
-  <string name="title_pref_reverse_dots">Otočit body</string>
-  <string name="summary_pref_reverse_dots">Zaměnit pozice bodů (tj. např. body 1 a 4 si vymění místa)</string>
+  <string name="title_pref_reverse_dots">Prohodit levé a pravé body</string>
+  <string name="summary_pref_reverse_dots">Body 1, 2 a 3 si vymění místa s body 4, 5 a 6</string>
   <string name="bd_preference_braille_contracted">Zkratkopis</string>
   <string name="bd_preference_braille_uncontracted">Plnopis</string>
   <string name="context_menu_title">Možnost braillské klávesnice</string>
