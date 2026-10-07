@@ -1,0 +1,62 @@
+name: Czech Backtalk branding migration
+
+on:
+  push:
+    branches:
+      - czech-translation
+    paths:
+      - '.github/workflows/czech-backtalk-branding.yml'
+      - 'talkback/src/main/res/values-cs/**'
+      - 'braille/**/src/main/res/values-cs/**'
+
+permissions:
+  contents: write
+
+jobs:
+  rename-brand:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: czech-translation
+
+      - name: Replace product name in Czech user-visible resources
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t files < <(find talkback braille -type f -path '*/src/main/res/values-cs/*.xml' -print 2>/dev/null || true)
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo 'No Czech resource files found.'
+            exit 1
+          fi
+          for file in "${files[@]}"; do
+            sed -i 's/TalkBack/Backtalk/g' "$file"
+          done
+
+      - name: Validate XML
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          files = list(Path('talkback').glob('**/src/main/res/values-cs/*.xml')) + list(Path('braille').glob('**/src/main/res/values-cs/*.xml'))
+          for path in files:
+              ET.parse(path)
+          print(f'Validated {len(files)} Czech XML files.')
+          PY
+
+      - name: Commit branding changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo 'No TalkBack branding remains to replace.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add talkback braille
+          git commit -m 'Use Backtalk branding throughout Czech localization'
+          git push origin HEAD:czech-translation
