@@ -25,6 +25,10 @@
     <string name="title_pref_speak_notifications">Oznamovat příchozí oznámení</string>
     <string name="summary_pref_speak_notifications">Číst nová oznámení nahlas, když přijdou</string>
 
+    <!-- Volume changes. -->
+    <string name="title_pref_speak_volume_changes">Oznamovat změny hlasitosti</string>
+    <string name="summary_pref_speak_volume_changes">Po stisknutí tlačítek hlasitosti říkat novou úroveň hlasitosti</string>
+
     <!-- Screen announcements. -->
     <string name="title_pref_screen_announcements">Zapnutí a vypnutí obrazovky</string>
     <string name="summary_pref_screen_announcements">Zvolte, co Backtalk oznamuje při vypnutí nebo zapnutí obrazovky a při odemknutí telefonu</string>
@@ -51,6 +55,12 @@
     <string name="summary_support_wrap_around">Zapnout nebo vypnout přechod z poslední položky na první</string>
     <string name="wrap_around_on">Přecházení přes okraj zapnuto</string>
     <string name="wrap_around_off">Přecházení přes okraj vypnuto</string>
+
+    <!-- Braille keyboard tablet orientation. -->
+    <string name="title_selector_tablet_held_up_faces_away">Tablet držený svisle je otočen obrazovkou od vás</string>
+    <string name="summary_support_tablet_held_up_faces_away">Pro braillskou klávesnici na tabletu nebo rozloženém telefonu</string>
+    <string name="tablet_held_up_faces_away_on">Tablet držený svisle je otočen obrazovkou od vás: zapnuto</string>
+    <string name="tablet_held_up_faces_away_off">Tablet držený svisle je otočen obrazovkou od vás: vypnuto</string>
 
     <!-- Rotor gestures and step size. -->
     <string name="title_pref_shortcut_2finger_rotate_clockwise">Otočit 2 prsty po směru hodinových ručiček</string>
@@ -82,4 +92,12 @@
     <string name="value_audio_output_device_usb_device">USB zvukové zařízení</string>
     <string name="value_audio_output_device_aux_line">Zvukový výstup AUX</string>
     <string name="pref_category_selector_menu_summary_no_rotor">Přejetím třemi prsty doleva nebo doprava zvolte ovládání čtení. Potom ho změňte přejetím nahoru nebo dolů.</string>
+
+    <!-- Individual braille keyboard vibrations. -->
+    <string name="individual_vibration_braille_character">Braillská klávesnice: napsání znaku</string>
+    <string name="individual_vibration_braille_space">Braillská klávesnice: mezera nebo mazání</string>
+    <string name="individual_vibration_braille_new_line">Braillská klávesnice: nový řádek nebo smazání slova</string>
+    <string name="individual_vibration_braille_hold">Braillská klávesnice: podržení prstů</string>
+    <string name="individual_vibration_braille_gesture">Braillská klávesnice: ostatní gesta</string>
+    <string name="individual_vibration_braille_nothing_to_delete">Braillská klávesnice: není co smazat</string>
 </resources>
