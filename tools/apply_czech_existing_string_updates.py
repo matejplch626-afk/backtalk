@@ -74,10 +74,21 @@ replace_strings(
     },
 )
 
-add_string_if_missing(
-    "talkback/src/main/res/values-cs/strings_backtalk.xml",
-    "pref_category_selector_menu_summary_no_rotor",
-    "Přejetím třemi prsty doleva nebo doprava zvolte ovládání čtení. Potom ho změňte přejetím nahoru nebo dolů.",
-)
+for key, value in {
+    "pref_category_selector_menu_summary_no_rotor": "Přejetím třemi prsty doleva nebo doprava zvolte ovládání čtení. Potom ho změňte přejetím nahoru nebo dolů.",
+    "title_pref_multi_tap_timeout": "Doba mezi klepnutími",
+    "value_multi_tap_timeout_100ms": "0,1 sekundy",
+    "value_multi_tap_timeout_150ms": "0,15 sekundy",
+    "value_multi_tap_timeout_200ms": "0,2 sekundy",
+    "value_multi_tap_timeout_250ms": "0,25 sekundy (výchozí)",
+    "title_pref_brightness": "Jas",
+    "summary_support_change_brightness": "Zvýšit nebo snížit jas obrazovky, i když je obrazovka skrytá",
+    "title_pref_shortcut_3finger_4tap": "Čtyřikrát klepnout třemi prsty",
+}.items():
+    add_string_if_missing(
+        "talkback/src/main/res/values-cs/strings_backtalk.xml",
+        key,
+        value,
+    )
 
 print("Applied Czech semantic updates successfully.")
