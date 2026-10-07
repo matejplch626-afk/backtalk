@@ -1,0 +1,53 @@
+name: Czech final branding audit
+
+on:
+  push:
+    branches: [czech-audit-trigger]
+    paths: ['.github/workflows/czech-final-audit.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: czech-pr
+      - name: Compare Backtalk branding in English and Czech
+        shell: python
+        run: |
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          pairs = [
+              (Path('talkback/src/main/res/values/strings.xml'), Path('talkback/src/main/res/values-cs/strings.xml')),
+              (Path('braille/brailleime/src/phone/res/values/strings.xml'), Path('braille/brailleime/src/phone/res/values-cs/strings.xml')),
+          ]
+
+          def strings(path):
+              root = ET.parse(path).getroot()
+              out = {}
+              for e in root.findall('string'):
+                  name = e.attrib.get('name')
+                  if name:
+                      out[name] = ''.join(e.itertext())
+              return out
+
+          findings = []
+          for en_path, cs_path in pairs:
+              en = strings(en_path)
+              cs = strings(cs_path)
+              for key, en_text in en.items():
+                  cs_text = cs.get(key, '')
+                  if 'Backtalk' in en_text and 'TalkBack' in cs_text:
+                      findings.append((str(cs_path), key, en_text.replace('\n',' '), cs_text.replace('\n',' ')))
+
+          print(f'BRANDING_MISMATCH_COUNT={len(findings)}')
+          for path, key, en_text, cs_text in findings:
+              print(f'FILE={path}')
+              print(f'KEY={key}')
+              print(f'EN={en_text}')
+              print(f'CS={cs_text}')
+              print('---')
