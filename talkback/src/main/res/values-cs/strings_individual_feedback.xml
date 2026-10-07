@@ -39,4 +39,10 @@
   <string name="individual_vibration_gesture">Začátek gesta</string>
   <string name="individual_vibration_typo">Pravopisná chyba</string>
   <string name="individual_vibration_notification">Oznámení</string>
+  <string name="individual_vibration_braille_character">Braillská klávesnice: zadání znaku</string>
+  <string name="individual_vibration_braille_space">Braillská klávesnice: mezera nebo mazání</string>
+  <string name="individual_vibration_braille_new_line">Braillská klávesnice: nový řádek nebo smazání slova</string>
+  <string name="individual_vibration_braille_hold">Braillská klávesnice: přidržení prstů</string>
+  <string name="individual_vibration_braille_gesture">Braillská klávesnice: ostatní gesta</string>
+  <string name="individual_vibration_braille_nothing_to_delete">Braillská klávesnice: není co smazat</string>
 </resources>
