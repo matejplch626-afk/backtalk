@@ -8,7 +8,7 @@ This file is the continuity anchor for the Czech localization of BackTalk.
 - Upstream branch: `master`
 - Czech fork: `matejplch626-afk/backtalk`
 - Working branch: `czech-translation`
-- Last upstream commit checked when this file was created: `f4cdc0d3f46f4f6a946824ee7b24c236c6487f1e` (`Grow the low-latency buffer when the fast mixer runs short (#71)`, 2026-10-06)
+- Last upstream commit checked: `5e2fae60d1c2ed3f057db938ee9b46268a82daf4` (`Let each braille keyboard vibration be turned off on its own (#89)`, 2026-10-07)
 
 ## Localization strategy
 
@@ -17,7 +17,7 @@ BackTalk inherits a large existing Czech translation from Google's TalkBack. Do 
 For BackTalk-specific strings:
 
 1. Add new Czech resources under the corresponding `values-cs` directory.
-2. Prefer separate feature-specific files such as `strings_backtalk.xml`, `strings_sound_themes.xml`, etc. when the resource key is new.
+2. Prefer separate feature-specific files when the resource key is new.
 3. Do not duplicate an existing Czech resource name in a supplementary file.
 4. If BackTalk changes the meaning of an existing TalkBack resource key, edit the inherited Czech resource value in its original Czech file instead of creating a duplicate.
 5. Preserve Android format placeholders, plurals, XML escaping, XLIFF markup, and `translatable="false"` semantics exactly.
@@ -30,62 +30,25 @@ For BackTalk-specific strings:
 
 Under `talkback/src/main/res/values-cs/`:
 
-- `strings_backtalk.xml`
-  - low-latency audio
-  - automatic language/dialect switching
-  - screen announcements
-  - lift-to-activate
-  - wrap-around navigation
-  - rotor gestures and rotor step size
-  - proximity-based speakerphone behavior
-  - audio output routing
-  - TTS engine/settings options
-  - long-text sentence mode
-  - incoming notification announcements
-- `strings_control_sounds.xml`
-  - control sounds and vibrations
-  - 3D audio settings
-  - individual control sound labels
-- `strings_sound_themes.xml`
-  - sound themes
-  - theme installation/removal/export
-  - custom sounds and vibration-related UI text
-  - Braille keyboard sound labels inside themes
-- `strings_direct_touch.xml`
-  - Direct touch settings and app-specific direct typing
-- `strings_on_device_ai.xml`
-  - on-device AI model selection/download/import/storage/memory/GPU/errors
-- `strings_pause.xml`
-  - pause/resume BackTalk UI
-- `strings_radial_menu.xml`
-  - circle/radial menu
-- `strings_update.xml`
-  - built-in updater
-- `strings_gemini_api_key.xml`
-  - Gemini API key settings
-- `strings_gemini_errors.xml`
-  - Gemini API and quota/error messages
+- `strings_backtalk.xml` — low-latency audio, automatic language/dialect switching, screen announcements, lift-to-activate, wrap-around navigation, rotor gestures, proximity speakerphone behavior, audio routing, TTS options, long-text sentence mode, incoming notifications
+- `strings_control_sounds.xml` — control sounds/vibrations, 3D audio, control sound labels
+- `strings_sound_themes.xml` — sound themes, install/remove/export, custom sounds/vibrations, Braille keyboard sounds
+- `strings_direct_touch.xml` — Direct touch and app-specific direct typing
+- `strings_on_device_ai.xml` — on-device AI model UI/errors
+- `strings_pause.xml` — pause/resume BackTalk
+- `strings_radial_menu.xml` — circle/radial menu
+- `strings_update.xml` — built-in updater
+- `strings_gemini_api_key.xml` — Gemini API key settings
+- `strings_gemini_errors.xml` — Gemini API/quota errors
+- `strings_individual_feedback.xml` — individual sounds/vibrations, including six independently switchable Braille keyboard vibrations added upstream in #89
 
 ### Braille IME
 
-Under `braille/brailleime/src/phone/res/values-cs/`:
-
-- `strings_backtalk.xml`
-  - screen-toward/tabletop/screen-away orientation announcements
-  - charging-port orientation announcements
-  - orientation lock/unlock announcements
-  - tablet held-up faces-away setting
-  - Braille keyboard typing sounds
-  - Braille keyboard echo
-  - vertical dot swap setting
-  - skip tutorial
+Under `braille/brailleime/src/phone/res/values-cs/`, `strings_backtalk.xml` covers orientation announcements/settings, Braille keyboard typing sounds/echo, vertical dot swap, and skip tutorial.
 
 ### Braille common
 
-Under `braille/common/src/phone/res/values-cs/`:
-
-- `strings_backtalk.xml`
-  - orientation lock toggle gesture label
+Under `braille/common/src/phone/res/values-cs/`, `strings_backtalk.xml` covers the orientation-lock gesture label.
 
 ## Important commits in the Czech branch
 
@@ -94,129 +57,61 @@ Under `braille/common/src/phone/res/values-cs/`:
 - `9104fa801add12524d7fa98ed998c6afb19c17e3` — lift activation, wrap-around, rotor gestures, call routing
 - `b823d08891ff36c71329a69ff89b70f2639a2aae` — speech and notification settings
 - `69d6f06647f92ad8ccfadfcb9eb67ed808809d88` — corrected Czech validation workflow; successful audit/build run followed
+- `169a66615d7cc65de4b11c3db6605d35043769b8` — Czech labels for six new Braille keyboard vibration controls from upstream #89
 
-Additional feature-specific Czech commits were made for sound themes, control sounds, Direct touch, on-device AI, Pause BackTalk, circle menu, updater, Gemini settings/errors, and Braille keyboard settings.
+## Upstream watch log
+
+### 2026-10-07 — through `5e2fae60d1c2ed3f057db938ee9b46268a82daf4`
+
+Upstream advanced by 13 commits from the previous checkpoint `f4cdc0d3f46f4f6a946824ee7b24c236c6487f1e`. Most changes were code, CI, dependencies, documentation, TV behavior, or non-translatable resources. Commit #89 added six new user-visible English string resources for independently controlling Braille keyboard vibrations. Czech translations were added for all six. No placeholders, XLIFF markup, or plurals are involved in these six strings.
+
+New Czech labels:
+
+- Braille keyboard: typing a character → `Braillská klávesnice: zadání znaku`
+- space or delete → `Braillská klávesnice: mezera nebo mazání`
+- new line or deleting a word → `Braillská klávesnice: nový řádek nebo smazání slova`
+- holding fingers down → `Braillská klávesnice: přidržení prstů`
+- other gestures → `Braillská klávesnice: ostatní gesta`
+- nothing to delete → `Braillská klávesnice: není co smazat`
 
 ## Completed BackTalk-specific areas
 
-The Czech branch currently includes translations for:
+The Czech branch includes translations for sound themes, control sounds/vibrations, 3D audio, custom sounds, screen/tabletop orientation, audio routing, rotor behavior, lift-to-activate, wrap-around navigation, proximity speakerphone behavior, Direct touch, on-device AI, Gemini settings/errors, Pause BackTalk, circle menu, updater, Braille keyboard additions, TTS options, sentence-at-a-time mode, incoming notifications, and individual Braille keyboard vibration controls.
 
-- sound themes
-- control sounds and per-control vibrations UI
-- 3D audio
-- custom sounds
-- screen-away / tabletop / device orientation announcements
-- audio routing
-- rotor step size and two-finger rotor gestures
-- lift-to-activate
-- wrap-around navigation
-- proximity-based speakerphone behavior
-- Direct touch
-- on-device AI
-- Gemini API key and errors
-- Pause BackTalk
-- circle/radial menu
-- built-in updater
-- Braille keyboard additions
-- separate TTS options
-- sentence-at-a-time long-text mode
-- incoming notification announcements
+## Audit and build status
 
-## Audit and build status as of 2026-10-06
+GitHub Actions workflow `Czech translation audit and build` completed successfully in run #7 on 2026-10-06. It audited changed existing English keys, applied Czech semantic updates, checked duplicate Czech resource names, validated XML and simple-string placeholders, completed the Gradle debug build, and produced phone/Wear APK artifacts.
 
-The dedicated GitHub Actions workflow `Czech translation audit and build` completed successfully in run #7.
-
-Successful checks in that run:
-
-- audited changed existing English resource keys
-- applied audited Czech semantic updates
-- verified no duplicate Czech resource names in the checked resource sets
-- validated Czech XML files
-- validated simple-string format placeholders
-- completed the Gradle debug build successfully
-- produced phone and Wear debug APK artifacts
-
-The previous run #6 failed only because the first placeholder validator incorrectly compared plural resources across languages with different plural-form counts. The validator was corrected; run #7 then completed successfully.
-
-The audit also identified a broad upstream branding change from `TalkBack` to `Backtalk` in many inherited strings. These branding-only changes and any remaining semantic changes should be reviewed before the initial upstream Czech PR is considered complete.
+The audit also identified broad inherited branding changes from `TalkBack` to `Backtalk`; remaining branding-only and semantic changes should be reviewed before the initial upstream Czech PR.
 
 ## Test APK status
 
-A successful test artifact was produced from GitHub Actions run #7.
+A successful test artifact was produced from run #7: `backtalk-phone-debug.apk` plus a Wear build. BackTalk application ID is `fyi.quin.backtalk`, so it is expected to install alongside system/Google TalkBack as a separate accessibility service. Published debug builds use a debug signing key.
 
-Relevant phone APK:
-
-- `backtalk-phone-debug.apk`
-
-Wear build also exists:
-
-- `backtalk-wear-debug.apk`
-
-Application/package configuration has been checked:
-
-- BackTalk application ID: `fyi.quin.backtalk`
-- system/Google TalkBack therefore is not replaced by this package
-- the test build is expected to install alongside system TalkBack as a separate app/accessibility service
-- project build configuration states that published debug builds are signed with a debug key
-
-Current runtime-testing instruction:
-
-1. Install `backtalk-phone-debug.apk`.
-2. Keep the existing/system TalkBack installed and enabled initially.
-3. Confirm Android completes installation without an error.
-4. Open Android accessibility settings and confirm BackTalk appears as a separate accessibility service alongside TalkBack.
-5. Report the result before enabling BackTalk for a longer live test.
-6. After separation is confirmed, begin a controlled real-device Czech localization test.
+Runtime test sequence: install the phone APK, keep system TalkBack enabled initially, confirm BackTalk appears separately in Android accessibility settings, then begin controlled Czech localization testing.
 
 ## Remaining work before declaring 100% coverage
 
-1. Finish review of remaining changed existing keys found by the audit, especially inherited `TalkBack` -> `Backtalk` branding updates and any true semantic changes.
-2. Runtime-test the Czech strings on a real Android device.
-3. Correct any terminology, truncation, missing strings, malformed announcements, or feature-specific issues discovered during runtime testing.
-4. Re-run XML/resource validation and Gradle build after final corrections.
-5. Prepare the initial professional upstream pull request to `trypsynth/backtalk:master`.
+1. Finish review of remaining changed existing keys, especially inherited `TalkBack` → `Backtalk` branding and semantic changes.
+2. Runtime-test Czech strings on a real Android device.
+3. Correct terminology, truncation, missing strings, malformed announcements, or feature-specific issues found in testing.
+4. Re-run validation/build after final corrections and after syncing current upstream code.
+5. Prepare the initial professional upstream PR to `trypsynth/backtalk:master`.
 
 ## Maintenance workflow
 
-For every new upstream BackTalk commit or release:
-
-1. Compare upstream changes against the last checked upstream commit recorded here.
-2. Inspect changes to English translatable resources under TalkBack and Braille modules.
-3. Translate newly added user-visible strings to Czech.
-4. Audit modified existing keys for semantic changes and update inherited Czech values when necessary.
-5. Preserve placeholders/XLIFF/plurals exactly.
-6. Commit changes to `matejplch626-afk/backtalk:czech-translation` with a focused commit message.
-7. Update the `Last upstream commit checked` value in this file.
-8. Report what was changed and whether a build validation succeeded.
-9. When a coherent batch is ready and tested, open a small pull request to `trypsynth/backtalk:master`.
+For every new upstream commit/release: compare from the recorded checkpoint; inspect English translatable resources in TalkBack/Braille; translate new keys; audit changed existing keys; preserve placeholders/XLIFF/plurals; commit focused Czech changes; update this checkpoint; validate/build when the branch contains the corresponding upstream code; and submit small upstream PRs once coherent and tested.
 
 ## Upstream contribution policy
 
-Prefer small, reviewable pull requests rather than a permanently open mega-PR. After upstream accepts the initial Czech localization, subsequent BackTalk features should normally be delivered as focused Czech translation updates tied to the relevant upstream changes.
+Prefer small, reviewable pull requests rather than a permanently open mega-PR. After upstream accepts the initial Czech localization, subsequent BackTalk features should normally be delivered as focused Czech translation updates tied to relevant upstream changes.
 
 ## Initial professional upstream PR plan
 
-Do not open the first upstream PR until the Czech localization has passed real-device testing and remaining audit findings have been reviewed.
+Do not open the first upstream PR until the Czech localization has passed real-device testing and remaining audit findings have been reviewed. The PR should explain that BackTalk inherits Google's Czech TalkBack localization; this contribution adds/updates BackTalk-specific Czech strings; inherited Czech strings change only where English meaning/branding changed; Android formatting semantics were preserved; resources passed automated validation/build; and localization was tested by a native Czech daily screen-reader user.
 
-The initial PR should be professional, compact, and easy to review. It should explain that:
+Matěj Plch is willing to act as the Czech localization maintainer/contact. Upstream developers need not translate Czech themselves; focused Czech follow-up PRs can be submitted when English user-facing strings change.
 
-- BackTalk already inherits the large Czech localization from Google TalkBack
-- this contribution adds and updates Czech strings specifically needed by BackTalk
-- new BackTalk-only keys are isolated in feature-specific Czech resource files where practical
-- inherited Czech strings are edited only where BackTalk changed the meaning or branding of an existing English key
-- Android placeholders, XLIFF markup, plural rules, escaping, and XML semantics were preserved
-- the Czech resources passed automated XML/resource validation and a real Gradle debug build
-- the localization was tested by a native Czech speaker who is also a daily screen-reader user
-
-Long-term maintenance offer for the upstream developers:
-
-- Matěj Plch is willing to act as the Czech localization maintainer/contact
-- upstream developers do not need to translate Czech themselves
-- when BackTalk adds or changes user-visible English strings, focused Czech follow-up PRs can be submitted promptly
-- the preferred model is one coherent initial Czech PR followed by small incremental maintenance PRs
-
-Suggested wording for the first PR description or accompanying message:
+Suggested wording:
 
 > Czech localization is maintained continuously. I am a native Czech speaker and daily screen reader user. I can keep Backtalk-specific Czech strings updated as new features are added. You don't need to maintain the Czech translations yourself; I will submit small follow-up pull requests whenever English user-facing strings change.
-
-This upstream-maintainer relationship is a project goal and should remain part of future planning.
