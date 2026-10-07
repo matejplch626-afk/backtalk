@@ -8,7 +8,7 @@ This file is the continuity anchor for the Czech localization of BackTalk.
 - Upstream branch: `master`
 - Czech fork: `matejplch626-afk/backtalk`
 - Working branch: `czech-translation`
-- Last upstream commit checked: `348917379a54f31fda51f6b1d413af89062af5d5` (`Build native code for x86_64 too (#93)`, 2026-10-07)
+- Last upstream commit checked: `694af2bebd957cb90d5c70af6c425b7beeaad4f4` (`Remove the direct touch limitations note`, 2026-10-07)
 
 ## Localization strategy
 
@@ -62,6 +62,10 @@ Under `braille/common/src/phone/res/values-cs/`, `strings_backtalk.xml` covers t
 - `4b87efbc611b8780f801a101f10385e9b16af417` — Czech strings for the new emoji speech and repeated-emoji settings from upstream #72
 
 ## Upstream watch log
+
+### 2026-10-07 — through `694af2bebd957cb90d5c70af6c425b7beeaad4f4`
+
+Upstream advanced by 2 commits from `348917379a54f31fda51f6b1d413af89062af5d5`. Commit #94 changed only on-device AI request-state handling in Kotlin code. The following commit removed four lines from `differences.md` describing Direct touch limitations. Neither commit changed TalkBack/Braille translatable resources or existing English resource meanings, so no Czech localization changes were required.
 
 ### 2026-10-07 — through `348917379a54f31fda51f6b1d413af89062af5d5`
 
