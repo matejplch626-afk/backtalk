@@ -1,0 +1,141 @@
+name: Finalize Czech PR branch
+
+on:
+  push:
+    branches: [czech-audit-trigger]
+    paths: ['.github/workflows/czech-finalize-pr.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: czech-pr
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Update inherited Czech Backtalk branding and polish text
+        shell: python
+        run: |
+          import re
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          pairs = [
+              (Path('talkback/src/main/res/values/strings.xml'), Path('talkback/src/main/res/values-cs/strings.xml')),
+              (Path('braille/brailleime/src/phone/res/values/strings.xml'), Path('braille/brailleime/src/phone/res/values-cs/strings.xml')),
+          ]
+
+          def parsed(path):
+              root = ET.parse(path).getroot()
+              return {e.attrib.get('name'): ''.join(e.itertext()) for e in root.findall('string') if e.attrib.get('name')}
+
+          def replace_string_body(xml, key, transform=None, replacement=None):
+              pat = re.compile(r'(<string\b[^>]*\bname="' + re.escape(key) + r'"[^>]*>)(.*?)(</string>)', re.S)
+              m = pat.search(xml)
+              if not m:
+                  raise RuntimeError(f'Missing Czech string: {key}')
+              body = m.group(2)
+              new_body = replacement if replacement is not None else transform(body)
+              return xml[:m.start()] + m.group(1) + new_body + m.group(3) + xml[m.end():]
+
+          total = 0
+          mixed = set()
+          for en_path, cs_path in pairs:
+              en = parsed(en_path)
+              cs = parsed(cs_path)
+              xml = cs_path.read_text(encoding='utf-8')
+              for key, en_text in en.items():
+                  cs_text = cs.get(key, '')
+                  if 'Backtalk' not in en_text or 'TalkBack' not in cs_text:
+                      continue
+                  if 'TalkBack' in en_text:
+                      mixed.add((str(cs_path), key))
+                      continue
+                  xml = replace_string_body(xml, key, transform=lambda b: b.replace('TalkBack', 'Backtalk'))
+                  total += 1
+              cs_path.write_text(xml, encoding='utf-8')
+
+          expected_mixed = {('talkback/src/main/res/values-cs/strings.xml', 'tv_training_overview_step_summary')}
+          if mixed != expected_mixed:
+              raise SystemExit(f'Unexpected mixed Backtalk/TalkBack source strings: {sorted(mixed)}')
+
+          main = Path('talkback/src/main/res/values-cs/strings.xml')
+          xml = main.read_text(encoding='utf-8')
+          xml = replace_string_body(
+              xml,
+              'tv_training_overview_step_summary',
+              replacement='Backtalk je čtečka obrazovky založená na čtečce TalkBack od Googlu. Čte nahlas text na obrazovce a poskytuje vám hlasovou odezvu, abyste zařízení mohli používat bez sledování obrazovky.\\n\\nKdyž je Backtalk zapnutý, hlasově oznamuje položku vybranou na obrazovce a někdy doplní další informace nebo kontext.\\n\\nPokračujte stisknutím tlačítka Vybrat. Tlačítko Vybrat najdete uprostřed d-padu, což je velké kruhové tlačítko v horní části dálkového ovládání.'
+          )
+          xml = replace_string_body(xml, 'summary_smart_browse_mode', transform=lambda b: b.replace('Automatický zapíná', 'Automaticky zapíná'))
+          xml = replace_string_body(xml, 'cut_paste_text_pre_r', transform=lambda b: b.replace('Oříznutí nebo vložení textu', 'Vyjmutí nebo vložení textu'))
+          xml = replace_string_body(xml, 'dialog_message_dim_screen', transform=lambda b: b.replace('soukromí Může', 'soukromí. Může'))
+          xml = replace_string_body(xml, 'talkback_service_html_description', transform=lambda b: b.replace('<br><br>Jak vypnout funkci Backtalk</b>', '<br><br><b>Jak vypnout Backtalk</b>'))
+          xml = replace_string_body(xml, 'all_set_text', transform=lambda b: b if b.rstrip().endswith('.') else b.rstrip() + '.')
+          main.write_text(xml, encoding='utf-8')
+
+          print(f'Automatically updated branding in {total} Czech strings; handled {len(mixed)} mixed-source exception(s).')
+
+      - name: Verify branding alignment, XML, and placeholders
+        shell: python
+        run: |
+          import re
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          pairs = [
+              (Path('talkback/src/main/res/values/strings.xml'), Path('talkback/src/main/res/values-cs/strings.xml')),
+              (Path('braille/brailleime/src/phone/res/values/strings.xml'), Path('braille/brailleime/src/phone/res/values-cs/strings.xml')),
+          ]
+          placeholder = re.compile(r'%(?:\d+\$)?[a-zA-Z]')
+          failures=[]
+          remaining=[]
+
+          for en_path, cs_path in pairs:
+              en_root=ET.parse(en_path).getroot(); cs_root=ET.parse(cs_path).getroot()
+              en={e.attrib.get('name'): ''.join(e.itertext()) for e in en_root.findall('string') if e.attrib.get('name')}
+              cs={e.attrib.get('name'): ''.join(e.itertext()) for e in cs_root.findall('string') if e.attrib.get('name')}
+              for key,en_text in en.items():
+                  cs_text=cs.get(key)
+                  if cs_text is None: continue
+                  if 'Backtalk' in en_text and 'TalkBack' not in en_text and 'TalkBack' in cs_text:
+                      remaining.append(f'{cs_path}: {key}')
+                  a=sorted(placeholder.findall(en_text)); b=sorted(placeholder.findall(cs_text))
+                  if a!=b: failures.append(f'{cs_path}: {key}: placeholders EN={a}, CS={b}')
+
+          if remaining:
+              failures += ['Remaining stale TalkBack branding: ' + x for x in remaining]
+          if failures:
+              raise SystemExit('\n'.join(failures))
+          print('Branding alignment, XML parsing and placeholders all pass.')
+
+      - name: Build debug APKs
+        run: ./gradlew assembleDebug --console=plain
+
+      - name: Commit final Czech cleanup to PR branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add talkback/src/main/res/values-cs/strings.xml braille/brailleime/src/phone/res/values-cs/strings.xml
+          if ! git diff --cached --quiet; then
+            git commit -m 'Polish Czech Backtalk branding and inherited strings'
+            git push origin HEAD:czech-pr
+          else
+            echo 'No changes to commit.'
+          fi
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: czech-final-test-apks
+          path: build/outputs/apk/**/*.apk
+          if-no-files-found: error
