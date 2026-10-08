@@ -8,7 +8,7 @@ This file is the continuity anchor for the Czech localization of BackTalk.
 - Upstream branch: `master`
 - Czech fork: `matejplch626-afk/backtalk`
 - Working branch: `czech-translation`
-- Last upstream commit checked: `694af2bebd957cb90d5c70af6c425b7beeaad4f4` (`Remove the direct touch limitations note`, 2026-10-07)
+- Last upstream commit checked: `7b7df8489033130cbb788e8c7258c1b755f3132f` (`Let lift to activate on the navigation bar pass touches straight to it`, 2026-10-08)
 
 ## Localization strategy
 
@@ -60,8 +60,13 @@ Under `braille/common/src/phone/res/values-cs/`, `strings_backtalk.xml` covers t
 - `69d6f06647f92ad8ccfadfcb9eb67ed808809d88` — corrected Czech validation workflow; successful audit/build run followed
 - `169a66615d7cc65de4b11c3db6605d35043769b8` — Czech labels for six new Braille keyboard vibration controls from upstream #89
 - `4b87efbc611b8780f801a101f10385e9b16af417` — Czech strings for the new emoji speech and repeated-emoji settings from upstream #72
+- `a93641b0a5ccc063c00bb41293dc0a011f15cfab` — removed three obsolete Czech Backtalk strings removed upstream
 
 ## Upstream watch log
+
+### 2026-10-08 — through `7b7df8489033130cbb788e8c7258c1b755f3132f`
+
+Upstream advanced by 16 commits from `694af2bebd957cb90d5c70af6c425b7beeaad4f4`. Most changes were code, build/CI/dependency maintenance, touch-exploration performance, call speech flags, and lift-to-activate behavior. No new translatable TalkBack/Braille resource keys or changed English meanings requiring new Czech wording were found. Commit `d3bbe47ebbd7ba8dd84fb884a11da3e0dfddf5a3` removed three Backtalk-added English resources that were no longer used (`value_audio_output_device_none_connected`, `value_audio_output_device_aux_line`, and `pref_category_selector_menu_summary_no_rotor`), so their Czech counterparts were removed as well.
 
 ### 2026-10-07 — through `694af2bebd957cb90d5c70af6c425b7beeaad4f4`
 
@@ -90,7 +95,7 @@ The Czech branch includes translations for sound themes, control sounds/vibratio
 
 ## Audit and build status
 
-GitHub Actions workflow `Czech translation audit and build` completed successfully in run #18 on 2026-10-07. It audited changed existing English keys, checked duplicate Czech resource names, validated XML and simple-string placeholders, completed the Gradle debug build, and produced APK artifacts. A new validation run is expected after the emoji localization commit.
+GitHub Actions workflow `Czech translation audit and build` completed successfully in run #18 on 2026-10-07. It audited changed existing English keys, checked duplicate Czech resource names, validated XML and simple-string placeholders, completed the Gradle debug build, and produced APK artifacts. A new validation run is expected after localization maintenance commits.
 
 ## Test APK status
 
