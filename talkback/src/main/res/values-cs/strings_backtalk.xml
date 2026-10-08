@@ -105,4 +105,5 @@
     <string name="title_pref_brightness">Jas</string>
     <string name="summary_support_change_brightness">Zvýšit nebo snížit jas obrazovky, i když je obrazovka skrytá</string>
     <string name="title_pref_shortcut_3finger_4tap">Čtyřikrát klepnout třemi prsty</string>
+    <string name="pref_category_selector_menu_summary_no_rotor">Přejetím třemi prsty doleva nebo doprava zvolte ovládání čtení. Potom ho změňte přejetím nahoru nebo dolů.</string>
 </resources>
