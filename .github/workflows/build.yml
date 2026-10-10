@@ -51,11 +51,21 @@ jobs:
       - name: Run unit tests
         run: ./gradlew testPhoneDebugUnitTest --console=plain
 
+      # Regenerate the baseline once so the updated file can be committed back to this PR.
+      - name: Regenerate lint baseline
+        run: ./gradlew updateLintBaselinePhoneDebug --console=plain
+
       # The app's lint also checks the library modules. Issues already in lint-baseline.xml are
       # allowed, so this fails only on new errors, such as a call that needs a newer Android than
       # minSdk without a version check.
       - name: Run lint
         run: ./gradlew :lintPhoneDebug --console=plain
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: lint-baseline
+          path: lint-baseline.xml
 
       - uses: actions/upload-artifact@v7
         if: failure()
