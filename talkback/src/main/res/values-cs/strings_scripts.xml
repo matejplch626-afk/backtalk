@@ -18,7 +18,7 @@
     <string name="script_state_on">Zapnuto</string>
     <string name="script_state_off">Vypnuto</string>
     <string name="script_runs_in">Spouští se v <xliff:g id="apps">%1$s</xliff:g></string>
-    <string name="scripts_runs_everywhere">Spouští se ve všech aplikacích</string>
+    <string name="script_runs_everywhere">Spouští se ve všech aplikacích</string>
     <string name="script_version">Verze <xliff:g id="version">%1$s</xliff:g></string>
     <string name="script_author">Autor: <xliff:g id="author">%1$s</xliff:g></string>
     <string name="script_install_title">Nainstalovat <xliff:g id="name">%1$s</xliff:g>?</string>
