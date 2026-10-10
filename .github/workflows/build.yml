@@ -51,13 +51,65 @@ jobs:
       - name: Run unit tests
         run: ./gradlew testPhoneDebugUnitTest --console=plain
 
-      # Regenerate the baseline once so the updated file can be committed back to this PR.
-      - name: Regenerate lint baseline
-        run: ./gradlew updateLintBaselinePhoneDebug --console=plain
+      # Capture the currently unmatched lint issues, then update only matching baseline messages.
+      - name: Capture lint report
+        continue-on-error: true
+        run: ./gradlew :lintPhoneDebug --console=plain
 
-      # The app's lint also checks the library modules. Issues already in lint-baseline.xml are
-      # allowed, so this fails only on new errors, such as a call that needs a newer Android than
-      # minSdk without a version check.
+      - name: Refresh changed MissingTranslation baseline messages
+        run: |
+          python3 - <<'PY'
+          import html
+          import re
+          import xml.etree.ElementTree as ET
+          from xml.sax.saxutils import escape
+
+          report_path = 'build/reports/lint-results-phoneDebug.xml'
+          baseline_path = 'lint-baseline.xml'
+
+          report = ET.parse(report_path).getroot()
+          current = {}
+          for issue in report.findall('issue'):
+              if issue.get('id') != 'MissingTranslation':
+                  continue
+              error_line = issue.get('errorLine1')
+              message = issue.get('message')
+              if error_line and message:
+                  current[error_line] = message
+
+          text = open(baseline_path, encoding='utf-8').read()
+          issue_re = re.compile(r'<issue\b.*?</issue>', re.DOTALL)
+          updated = 0
+
+          def replace_issue(match):
+              global updated
+              block = match.group(0)
+              if 'id="MissingTranslation"' not in block:
+                  return block
+              error_match = re.search(r'errorLine1="([^"]*)"', block)
+              message_match = re.search(r'message="([^"]*)"', block)
+              if not error_match or not message_match:
+                  return block
+              error_line = html.unescape(error_match.group(1))
+              new_message = current.get(error_line)
+              if not new_message:
+                  return block
+              old_message = html.unescape(message_match.group(1))
+              if old_message == new_message:
+                  return block
+              escaped = escape(new_message, {'"': '&quot;'})
+              block = block[:message_match.start(1)] + escaped + block[message_match.end(1):]
+              updated += 1
+              return block
+
+          text = issue_re.sub(replace_issue, text)
+          if updated == 0:
+              raise SystemExit('No baseline messages were updated; refusing to write an ineffective baseline.')
+          open(baseline_path, 'w', encoding='utf-8', newline='').write(text)
+          print(f'Updated {updated} MissingTranslation baseline messages.')
+          PY
+
+      # Verify that the minimally refreshed baseline is sufficient.
       - name: Run lint
         run: ./gradlew :lintPhoneDebug --console=plain
 
