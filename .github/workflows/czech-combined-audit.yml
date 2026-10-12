@@ -1,0 +1,183 @@
+name: Czech combined settings audit
+
+on:
+  push:
+    branches: [audit-czech-combined]
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Audit Czech settings completeness
+        run: |
+          python3 - <<'PY'
+          import os, re, sys, xml.etree.ElementTree as ET
+          from collections import defaultdict, Counter
+
+          RES='talkback/src/main/res'; EN=f'{RES}/values'; CS=f'{RES}/values-cs'; XD=f'{RES}/xml'
+
+          def text(e):
+              return ''.join(e.itertext()).strip()
+
+          def collect(folder):
+              strings={}; origins={}; arrays={}; duplicates=[]
+              seen=defaultdict(list)
+              for fn in sorted(os.listdir(folder)):
+                  if not fn.endswith('.xml'): continue
+                  path=os.path.join(folder,fn)
+                  try:
+                      root=ET.parse(path).getroot()
+                  except Exception as exc:
+                      print('PARSE_ERROR',path,exc)
+                      raise
+                  for e in root:
+                      name=e.attrib.get('name'); tag=e.tag.split('}')[-1]
+                      if not name: continue
+                      if tag=='string':
+                          seen[('string',name)].append(fn)
+                          strings[name]=text(e); origins[name]=fn
+                      elif tag in ('array','string-array'):
+                          seen[(tag,name)].append(fn)
+                          arrays[name]=[text(i) for i in e if i.tag.split('}')[-1]=='item']
+              for (kind,name), files in seen.items():
+                  if len(files)>1: duplicates.append((kind,name,files))
+              return strings, origins, arrays, duplicates
+
+          en,en_origin,en_arrays,en_dupes=collect(EN)
+          cs,cs_origin,cs_arrays,cs_dupes=collect(CS)
+
+          visible=defaultdict(set); entries=defaultdict(set); pref_files=[]
+          for fn in sorted(os.listdir(XD)):
+              if not fn.endswith('.xml'): continue
+              path=os.path.join(XD,fn); raw=open(path,encoding='utf-8').read()
+              if 'Preference' not in raw and 'preference' not in fn.lower() and fn not in ('gemini_settings.xml','gemini_motion.xml'):
+                  continue
+              pref_files.append(fn)
+              root=ET.parse(path).getroot()
+              for e in root.iter():
+                  for ak,av in e.attrib.items():
+                      attr=ak.split('}')[-1]
+                      sm=re.fullmatch(r'@string/([A-Za-z0-9_]+)',av)
+                      if sm and attr in ('title','summary','dialogTitle'):
+                          visible[sm.group(1)].add(fn)
+                      am=re.fullmatch(r'@array/([A-Za-z0-9_]+)',av)
+                      if am and attr=='entries':
+                          entries[am.group(1)].add(fn)
+
+          array_string_labels=defaultdict(set)
+          literal_array_fallbacks=[]
+          for arr_name, files in entries.items():
+              vals=en_arrays.get(arr_name,[])
+              if not vals:
+                  continue
+              literals=[]
+              for item in vals:
+                  m=re.fullmatch(r'@string/([A-Za-z0-9_]+)',item)
+                  if m:
+                      array_string_labels[m.group(1)].update(files)
+                  else:
+                      literals.append(item)
+              if literals and arr_name not in cs_arrays:
+                  literal_array_fallbacks.append((arr_name,literals,sorted(files)))
+
+          dynamic=defaultdict(set)
+          roots=[
+            'talkback/src/main/java/com/google/android/accessibility/talkback/preference',
+            'talkback/src/phone/java/com/google/android/accessibility/talkback/preference',
+            'talkback/src/main/java/com/google/android/accessibility/talkback/status',
+            'talkback/src/main/java/com/google/android/accessibility/talkback/directtouch',
+            'talkback/src/main/java/com/google/android/accessibility/talkback/speechcontrol',
+            'talkback/src/phone/java/com/google/android/accessibility/talkback/scripting']
+          pat=re.compile(r'(?:setTitle|setSummary|getText|getString|announce|contentDescription)[^\n;]*?R\.string\.([A-Za-z0-9_]+)')
+          for base in roots:
+              if not os.path.isdir(base): continue
+              for dp,_,files in os.walk(base):
+                  for fn in files:
+                      if not fn.endswith(('.java','.kt')): continue
+                      p=os.path.join(dp,fn); raw=open(p,encoding='utf-8',errors='ignore').read()
+                      for key in pat.findall(raw): dynamic[key].add(os.path.relpath(p))
+
+          for key in ('action_move_down','action_move_up','item_detail_name','item_detail_state','item_detail_type','item_details_order_footer','template_item_details_order_dropped','template_item_details_order_picked_up','template_list_position'):
+              dynamic[key].add('ItemDetails/ReorderableList settings')
+
+          candidates=set(visible)|set(array_string_labels)|set(dynamic)
+
+          def resolve_alias(key, seen=None):
+              if seen is None: seen=set()
+              if key in seen: return key
+              seen.add(key)
+              val=en.get(key,'')
+              m=re.fullmatch(r'@string/([A-Za-z0-9_]+)',val)
+              if m: return resolve_alias(m.group(1),seen)
+              return key
+
+          missing=[]
+          for key in sorted(candidates):
+              if not en_origin.get(key) or en_origin[key]=='donottranslate.xml':
+                  continue
+              target=resolve_alias(key)
+              if key in cs or target in cs:
+                  continue
+              missing.append((key,target,en.get(key,''),en_origin.get(key)))
+
+          # Validate printf placeholders for every Czech string used by settings.
+          fmt=re.compile(r'%(?:([1-9]\d*)\$)?([a-zA-Z])')
+          placeholder_mismatches=[]
+          for key in sorted(candidates):
+              target=resolve_alias(key)
+              if target not in en or target not in cs: continue
+              def sig(s):
+                  out=[]; implicit=1
+                  for idx,typ in fmt.findall(s):
+                      if idx:
+                          out.append((int(idx),typ))
+                      else:
+                          out.append((implicit,typ)); implicit+=1
+                  return sorted(out)
+              if sig(en[target]) != sig(cs[target]):
+                  placeholder_mismatches.append((target,sig(en[target]),sig(cs[target]),en[target],cs[target]))
+
+          # Check XLIFF ids for the two new Czech files against their English counterparts.
+          xliff_ns='{urn:oasis:names:tc:xliff:document:1.2}g'
+          xliff_mismatches=[]
+          checked_files=['strings_settings_completion.xml','strings_status.xml']
+          for cs_fn in checked_files:
+              cs_path=os.path.join(CS,cs_fn)
+              if not os.path.exists(cs_path): continue
+              root=ET.parse(cs_path).getroot()
+              for e in root:
+                  if e.tag.split('}')[-1] != 'string': continue
+                  key=e.attrib.get('name')
+                  if key not in en: continue
+                  cs_ids=[g.attrib.get('id') for g in e.iter() if g.tag==xliff_ns]
+                  if not cs_ids: continue
+                  # Find English element by key.
+                  en_el=None
+                  en_path=os.path.join(EN,en_origin[key])
+                  eroot=ET.parse(en_path).getroot()
+                  for x in eroot:
+                      if x.tag.split('}')[-1]=='string' and x.attrib.get('name')==key:
+                          en_el=x; break
+                  en_ids=[g.attrib.get('id') for g in en_el.iter() if g.tag==xliff_ns] if en_el is not None else []
+                  if en_ids != cs_ids:
+                      xliff_mismatches.append((key,en_ids,cs_ids))
+
+          print('=== FINAL COMBINED CZECH SETTINGS AUDIT ===')
+          print('PREFERENCE_FILES',len(pref_files))
+          print('VISIBLE_STRING_KEYS',len(candidates))
+          print('MISSING_VISIBLE_STRINGS',len(missing))
+          for row in missing: print('MISSING',row)
+          print('LITERAL_ENTRY_ARRAY_FALLBACKS',len(literal_array_fallbacks))
+          for row in literal_array_fallbacks: print('ARRAY_FALLBACK',row)
+          print('SETTINGS_PLACEHOLDER_MISMATCHES',len(placeholder_mismatches))
+          for row in placeholder_mismatches: print('PLACEHOLDER_MISMATCH',row)
+          print('NEW_FILE_XLIFF_ID_MISMATCHES',len(xliff_mismatches))
+          for row in xliff_mismatches: print('XLIFF_MISMATCH',row)
+          print('CS_DUPLICATE_RESOURCES',len(cs_dupes))
+          for row in cs_dupes: print('CS_DUPLICATE',row)
+          print('=== END AUDIT ===')
+
+          if missing or literal_array_fallbacks or placeholder_mismatches or xliff_mismatches or cs_dupes:
+              sys.exit(1)
+          PY
