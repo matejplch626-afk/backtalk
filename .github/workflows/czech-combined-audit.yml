@@ -13,7 +13,7 @@ jobs:
         run: |
           python3 - <<'PY'
           import os, re, sys, xml.etree.ElementTree as ET
-          from collections import defaultdict, Counter
+          from collections import defaultdict
 
           RES='talkback/src/main/res'; EN=f'{RES}/values'; CS=f'{RES}/values-cs'; XD=f'{RES}/xml'
 
@@ -21,7 +21,7 @@ jobs:
               return ''.join(e.itertext()).strip()
 
           def collect(folder):
-              strings={}; origins={}; arrays={}; duplicates=[]
+              strings={}; origins={}; arrays={}; array_origins={}; duplicates=[]
               seen=defaultdict(list)
               for fn in sorted(os.listdir(folder)):
                   if not fn.endswith('.xml'): continue
@@ -40,12 +40,13 @@ jobs:
                       elif tag in ('array','string-array'):
                           seen[(tag,name)].append(fn)
                           arrays[name]=[text(i) for i in e if i.tag.split('}')[-1]=='item']
+                          array_origins[name]=fn
               for (kind,name), files in seen.items():
                   if len(files)>1: duplicates.append((kind,name,files))
-              return strings, origins, arrays, duplicates
+              return strings, origins, arrays, array_origins, duplicates
 
-          en,en_origin,en_arrays,en_dupes=collect(EN)
-          cs,cs_origin,cs_arrays,cs_dupes=collect(CS)
+          en,en_origin,en_arrays,en_array_origin,en_dupes=collect(EN)
+          cs,cs_origin,cs_arrays,cs_array_origin,cs_dupes=collect(CS)
 
           visible=defaultdict(set); entries=defaultdict(set); pref_files=[]
           for fn in sorted(os.listdir(XD)):
@@ -68,6 +69,8 @@ jobs:
           array_string_labels=defaultdict(set)
           literal_array_fallbacks=[]
           for arr_name, files in entries.items():
+              if en_array_origin.get(arr_name)=='donottranslate.xml':
+                  continue
               vals=en_arrays.get(arr_name,[])
               if not vals:
                   continue
@@ -121,7 +124,6 @@ jobs:
                   continue
               missing.append((key,target,en.get(key,''),en_origin.get(key)))
 
-          # Validate printf placeholders for every Czech string used by settings.
           fmt=re.compile(r'%(?:([1-9]\d*)\$)?([a-zA-Z])')
           placeholder_mismatches=[]
           for key in sorted(candidates):
@@ -138,7 +140,6 @@ jobs:
               if sig(en[target]) != sig(cs[target]):
                   placeholder_mismatches.append((target,sig(en[target]),sig(cs[target]),en[target],cs[target]))
 
-          # Check XLIFF ids for the two new Czech files against their English counterparts.
           xliff_ns='{urn:oasis:names:tc:xliff:document:1.2}g'
           xliff_mismatches=[]
           checked_files=['strings_settings_completion.xml','strings_status.xml']
@@ -152,7 +153,6 @@ jobs:
                   if key not in en: continue
                   cs_ids=[g.attrib.get('id') for g in e.iter() if g.tag==xliff_ns]
                   if not cs_ids: continue
-                  # Find English element by key.
                   en_el=None
                   en_path=os.path.join(EN,en_origin[key])
                   eroot=ET.parse(en_path).getroot()
