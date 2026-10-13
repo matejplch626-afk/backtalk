@@ -43,8 +43,8 @@
     <string name="title_pref_speak_items_before_scroll">Vyslovovat položky předtím, než se posunou do zobrazení</string>
 
     <!-- Text-to-speech settings. -->
-    <string name="title_pref_mute_speech_while_recording">Vypnout řeč při nahrávání</string>
-    <string name="summary_pref_mute_speech_while_recording">Když aplikace začne nahrávat a nejsou připojena sluchátka, řeč se vypne, aby se do nahrávky nezaznamenala, a po skončení nahrávání se znovu zapne. Dříve ji můžete znovu zapnout gestem pro zapnutí nebo vypnutí řeči.</string>
+    <string name="title_pref_mute_speech_while_recording">Ztišit při nahrávání</string>
+    <string name="summary_pref_mute_speech_while_recording">Když aplikace nahrává bez připojených sluchátek, Backtalk mluví jen v reakci na vaše gesta, klávesy a psaní a zůstává zticha u věcí, jako jsou oznámení, aby se nezaznamenala do nahrávky.</string>
 
     <!-- Phonetic letter settings. -->
     <string name="title_pref_phonetic_letters_mode">Číst písmena foneticky</string>
