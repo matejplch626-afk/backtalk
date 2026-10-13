@@ -46,6 +46,13 @@
     <string name="title_pref_mute_speech_while_recording">Vypnout řeč při nahrávání</string>
     <string name="summary_pref_mute_speech_while_recording">Když aplikace začne nahrávat a nejsou připojena sluchátka, řeč se vypne, aby se do nahrávky nezaznamenala, a po skončení nahrávání se znovu zapne. Dříve ji můžete znovu zapnout gestem pro zapnutí nebo vypnutí řeči.</string>
 
+    <!-- Phonetic letter settings. -->
+    <string name="title_pref_phonetic_letters_mode">Číst písmena foneticky</string>
+    <string name="phonetic_letters_mode_off">Vypnuto</string>
+    <string name="phonetic_letters_mode_after_letter_delay">Po písmenu, se zpožděním, například „h, hotel“</string>
+    <string name="phonetic_letters_mode_after_letter_no_delay">Po písmenu, bez zpoždění, například „h hotel“</string>
+    <string name="phonetic_letters_mode_instead_of_letter">Místo písmene, například „hotel“</string>
+
     <!-- Gesture settings. -->
     <string name="title_pref_shortcut_3finger_4tap">Čtyřikrát klepnout třemi prsty</string>
 </resources>
