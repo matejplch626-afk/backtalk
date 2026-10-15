@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Czech translations for braille displays provided by other apps. -->
+    <string name="external_display_channel">Braillské řádky z jiných aplikací</string>
+    <string name="external_display_ask_title">Povolit aplikaci <xliff:g id="app" example="Notetaker">%1$s</xliff:g>, aby sloužila jako braillský řádek pro Backtalk?</string>
+    <string name="external_display_ask_text">Backtalk ji nezačne používat, dokud ji nepovolíte.</string>
+    <string name="external_display_warning"><xliff:g id="app" example="Notetaker">%1$s</xliff:g> bude moci číst vše, co Backtalk zobrazuje v braillu, tedy cokoli na obrazovce včetně zpráv a toho, co píšete. Bude také moci ovládat vaše zařízení stejně jako braillský řádek: psát, otevírat aplikace a spouštět libovolné příkazy Backtalku. Povolujte pouze aplikace, kterým důvěřujete.</string>
+    <string name="external_display_allow">Povolit</string>
+    <string name="external_display_deny">Nepovolit</string>
+    <string name="external_display_in_use_title"><xliff:g id="app" example="Notetaker">%1$s</xliff:g> je váš braillský řádek</string>
+    <string name="external_display_in_use_text">Dokud Backtalk tuto aplikaci používá, <xliff:g id="app" example="Notetaker">%1$s</xliff:g> může číst obsah obrazovky a ovládat zařízení.</string>
+    <string name="external_displays_title">Braillské řádky z jiných aplikací</string>
+    <string name="external_displays_summary">Aplikace, které povolíte, mohou pro Backtalk sloužit jako braillské řádky. Aplikace sloužící jako braillský řádek může číst obsah obrazovky a ovládat zařízení.</string>
+    <string name="external_displays_none">Žádné aplikace nemohou sloužit jako braillské řádky.</string>
+</resources>
