@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Refresh Czech MissingTranslation baseline entries
+      - name: Refresh exact Czech MissingTranslation baseline entries
         shell: python
         run: |
           from pathlib import Path
@@ -21,35 +21,35 @@ jobs:
           keys = [
               "battery_optimization_notification_title",
               "battery_optimization_notification_text",
-              "deselection_mode",
-              "braille_display_permission_instructions_message",
-              "braille_display_permission_instructions_title",
-              "pref_braille_displays_from_apps",
-              "pref_braille_displays_from_apps_description",
-              "pref_external_display_channel_list",
-              "external_display_channel_list_primary",
-              "external_display_channel_list_secondary",
-              "pref_external_display_channel_other",
-              "pref_external_display_channel_other_description",
-              "pref_braille_display_mirror",
-              "pref_braille_display_mirror_description",
-              "pref_braille_display_select_package",
-              "pref_braille_display_select_package_description",
-              "pref_braille_display_selected_package",
+              "permission_braille_display_label",
+              "permission_braille_display_description",
+              "external_display_channel",
+              "external_display_ask_title",
+              "external_display_ask_text",
+              "external_display_warning",
+              "external_display_allow",
+              "external_display_deny",
+              "external_display_in_use_title",
+              "external_display_in_use_text",
+              "external_displays_title",
+              "external_displays_summary",
+              "external_displays_none",
+              "title_clear_selection",
               "script_sources",
               "script_sources_none",
-              "script_sources_description",
-              "script_sources_add",
-              "script_sources_edit",
-              "script_sources_delete",
-              "script_sources_change_name",
-              "script_sources_set_url",
-              "script_sources_name_empty",
-              "script_sources_url_empty",
-              "script_sources_invalid_url",
-              "script_sources_download_failure",
-              "script_sources_download_success",
-              "script_sources_reset",
+              "script_source_add",
+              "script_source_add_button",
+              "script_source_hint",
+              "script_source_invalid",
+              "script_source_exists",
+              "script_source_loading",
+              "script_source_empty",
+              "script_source_failed",
+              "script_source_retry",
+              "script_source_downloading",
+              "script_source_remove",
+              "script_source_remove_title",
+              "script_source_remove_message",
           ]
 
           path = Path("lint-baseline.xml")
@@ -62,39 +62,35 @@ jobs:
               count = text.count(marker)
               if count != 1:
                   raise SystemExit(f"{key}: expected exactly one baseline message, found {count}")
-
               pos = text.find(marker)
               start = text.rfind("<issue", 0, pos)
               end = text.find("</issue>", pos)
               if start < 0 or end < 0:
                   raise SystemExit(f"{key}: issue block not found")
               end += len("</issue>")
-
               block = text[start:end]
               token_count = block.count(token)
               if token_count != 1:
                   raise SystemExit(f"{key}: expected Czech locale exactly once, found {token_count}")
-
               if f", {token}" in block:
                   block2 = block.replace(f", {token}", "", 1)
               elif f"{token}, " in block:
                   block2 = block.replace(f"{token}, ", "", 1)
               else:
                   raise SystemExit(f"{key}: unexpected Czech locale placement")
-
               text = text[:start] + block2 + text[end:]
               changed += 1
 
           if changed != 31:
               raise SystemExit(f"Expected 31 baseline updates, got {changed}")
-
           path.write_text(text, encoding="utf-8")
-          print(f"Updated {changed} MissingTranslation baseline entries")
+          print(f"Updated {changed} exact MissingTranslation baseline entries")
 
-      - name: Validate patch and remove helper workflow
+      - name: Validate patch and remove temporary files
         run: |
           git diff --check
           rm .github/workflows/refresh-czech-lint-baseline.yml
+          rm -f .ci-trigger
           git status --short
 
       - name: Commit refreshed baseline
