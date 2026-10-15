@@ -17,39 +17,40 @@ jobs:
         shell: python
         run: |
           from pathlib import Path
+          import re
 
-          keys = [
-              "battery_optimization_notification_title",
-              "battery_optimization_notification_text",
-              "permission_braille_display_label",
-              "permission_braille_display_description",
-              "external_display_channel",
-              "external_display_ask_title",
-              "external_display_ask_text",
-              "external_display_warning",
-              "external_display_allow",
-              "external_display_deny",
-              "external_display_in_use_title",
-              "external_display_in_use_text",
-              "external_displays_title",
-              "external_displays_summary",
-              "external_displays_none",
-              "title_clear_selection",
-              "script_sources",
-              "script_sources_none",
-              "script_source_add",
-              "script_source_add_button",
-              "script_source_hint",
-              "script_source_invalid",
-              "script_source_exists",
-              "script_source_loading",
-              "script_source_empty",
-              "script_source_failed",
-              "script_source_retry",
-              "script_source_downloading",
-              "script_source_remove",
-              "script_source_remove_title",
-              "script_source_remove_message",
+          entries = [
+              ("battery_optimization_notification_title", "talkback/src/main/res/values/strings.xml"),
+              ("battery_optimization_notification_text", "talkback/src/main/res/values/strings.xml"),
+              ("permission_braille_display_label", "talkback/src/main/res/values/strings.xml"),
+              ("permission_braille_display_description", "talkback/src/main/res/values/strings.xml"),
+              ("external_display_channel", "braille/brailledisplay/src/phone/res/values/strings.xml"),
+              ("external_display_ask_title", "braille/brailledisplay/src/phone/res/values/strings.xml"),
+              ("external_display_ask_text", "braille/brailledisplay/src/phone/res/values/strings.xml"),
+              ("external_display_warning", "braille/brailledisplay/src/phone/res/values/strings.xml"),
+              ("external_display_allow", "braille/brailledisplay/src/phone/res/values/strings.xml"),
+              ("external_display_deny", "braille/brailledisplay/src/phone/res/values/strings.xml"),
+              ("external_display_in_use_title", "braille/brailledisplay/src/phone/res/values/strings.xml"),
+              ("external_display_in_use_text", "braille/brailledisplay/src/phone/res/values/strings.xml"),
+              ("external_displays_title", "braille/brailledisplay/src/phone/res/values/strings.xml"),
+              ("external_displays_summary", "braille/brailledisplay/src/phone/res/values/strings.xml"),
+              ("external_displays_none", "braille/brailledisplay/src/phone/res/values/strings.xml"),
+              ("title_clear_selection", "talkback/src/main/res/values/strings.xml"),
+              ("script_sources", "talkback/src/main/res/values/strings_scripts.xml"),
+              ("script_sources_none", "talkback/src/main/res/values/strings_scripts.xml"),
+              ("script_source_add", "talkback/src/main/res/values/strings_scripts.xml"),
+              ("script_source_add_button", "talkback/src/main/res/values/strings_scripts.xml"),
+              ("script_source_hint", "talkback/src/main/res/values/strings_scripts.xml"),
+              ("script_source_invalid", "talkback/src/main/res/values/strings_scripts.xml"),
+              ("script_source_exists", "talkback/src/main/res/values/strings_scripts.xml"),
+              ("script_source_loading", "talkback/src/main/res/values/strings_scripts.xml"),
+              ("script_source_empty", "talkback/src/main/res/values/strings_scripts.xml"),
+              ("script_source_failed", "talkback/src/main/res/values/strings_scripts.xml"),
+              ("script_source_retry", "talkback/src/main/res/values/strings_scripts.xml"),
+              ("script_source_downloading", "talkback/src/main/res/values/strings_scripts.xml"),
+              ("script_source_remove", "talkback/src/main/res/values/strings_scripts.xml"),
+              ("script_source_remove_title", "talkback/src/main/res/values/strings_scripts.xml"),
+              ("script_source_remove_message", "talkback/src/main/res/values/strings_scripts.xml"),
           ]
 
           path = Path("lint-baseline.xml")
@@ -57,18 +58,13 @@ jobs:
           token = "&quot;cs&quot; (Czech)"
           changed = 0
 
-          for key in keys:
+          for key, source in entries:
               marker = f'message="&quot;{key}&quot; is not translated'
-              count = text.count(marker)
-              if count != 1:
-                  raise SystemExit(f"{key}: expected exactly one baseline message, found {count}")
-              pos = text.find(marker)
-              start = text.rfind("<issue", 0, pos)
-              end = text.find("</issue>", pos)
-              if start < 0 or end < 0:
-                  raise SystemExit(f"{key}: issue block not found")
-              end += len("</issue>")
-              block = text[start:end]
+              blocks = re.findall(r'<issue\b.*?</issue>', text, flags=re.S)
+              candidates = [b for b in blocks if marker in b and source in b]
+              if len(candidates) != 1:
+                  raise SystemExit(f"{key} / {source}: expected exactly one matching baseline block, found {len(candidates)}")
+              block = candidates[0]
               token_count = block.count(token)
               if token_count != 1:
                   raise SystemExit(f"{key}: expected Czech locale exactly once, found {token_count}")
@@ -78,7 +74,9 @@ jobs:
                   block2 = block.replace(f"{token}, ", "", 1)
               else:
                   raise SystemExit(f"{key}: unexpected Czech locale placement")
-              text = text[:start] + block2 + text[end:]
+              if text.count(block) != 1:
+                  raise SystemExit(f"{key}: selected issue block is not unique in baseline")
+              text = text.replace(block, block2, 1)
               changed += 1
 
           if changed != 31:
