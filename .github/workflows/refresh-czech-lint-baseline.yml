@@ -1,0 +1,107 @@
+name: Refresh Czech lint baseline
+
+on:
+  push:
+    branches: [ "czech-translation" ]
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Refresh Czech MissingTranslation baseline entries
+        shell: python
+        run: |
+          from pathlib import Path
+
+          keys = [
+              "battery_optimization_notification_title",
+              "battery_optimization_notification_text",
+              "deselection_mode",
+              "braille_display_permission_instructions_message",
+              "braille_display_permission_instructions_title",
+              "pref_braille_displays_from_apps",
+              "pref_braille_displays_from_apps_description",
+              "pref_external_display_channel_list",
+              "external_display_channel_list_primary",
+              "external_display_channel_list_secondary",
+              "pref_external_display_channel_other",
+              "pref_external_display_channel_other_description",
+              "pref_braille_display_mirror",
+              "pref_braille_display_mirror_description",
+              "pref_braille_display_select_package",
+              "pref_braille_display_select_package_description",
+              "pref_braille_display_selected_package",
+              "script_sources",
+              "script_sources_none",
+              "script_sources_description",
+              "script_sources_add",
+              "script_sources_edit",
+              "script_sources_delete",
+              "script_sources_change_name",
+              "script_sources_set_url",
+              "script_sources_name_empty",
+              "script_sources_url_empty",
+              "script_sources_invalid_url",
+              "script_sources_download_failure",
+              "script_sources_download_success",
+              "script_sources_reset",
+          ]
+
+          path = Path("lint-baseline.xml")
+          text = path.read_text(encoding="utf-8")
+          token = "&quot;cs&quot; (Czech)"
+          changed = 0
+
+          for key in keys:
+              marker = f'message="&quot;{key}&quot; is not translated'
+              count = text.count(marker)
+              if count != 1:
+                  raise SystemExit(f"{key}: expected exactly one baseline message, found {count}")
+
+              pos = text.find(marker)
+              start = text.rfind("<issue", 0, pos)
+              end = text.find("</issue>", pos)
+              if start < 0 or end < 0:
+                  raise SystemExit(f"{key}: issue block not found")
+              end += len("</issue>")
+
+              block = text[start:end]
+              token_count = block.count(token)
+              if token_count != 1:
+                  raise SystemExit(f"{key}: expected Czech locale exactly once, found {token_count}")
+
+              if f", {token}" in block:
+                  block2 = block.replace(f", {token}", "", 1)
+              elif f"{token}, " in block:
+                  block2 = block.replace(f"{token}, ", "", 1)
+              else:
+                  raise SystemExit(f"{key}: unexpected Czech locale placement")
+
+              text = text[:start] + block2 + text[end:]
+              changed += 1
+
+          if changed != 31:
+              raise SystemExit(f"Expected 31 baseline updates, got {changed}")
+
+          path.write_text(text, encoding="utf-8")
+          print(f"Updated {changed} MissingTranslation baseline entries")
+
+      - name: Validate patch and remove helper workflow
+        run: |
+          git diff --check
+          rm .github/workflows/refresh-czech-lint-baseline.yml
+          git status --short
+
+      - name: Commit refreshed baseline
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Refresh Czech MissingTranslation lint baseline"
+          git push
