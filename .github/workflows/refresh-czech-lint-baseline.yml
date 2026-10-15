@@ -19,79 +19,101 @@ jobs:
           from pathlib import Path
           import re
 
+          # Exact locations copied from the current lint-results-phoneDebug report.
           entries = [
-              ("battery_optimization_notification_title", "talkback/src/main/res/values/strings.xml"),
-              ("battery_optimization_notification_text", "talkback/src/main/res/values/strings.xml"),
-              ("permission_braille_display_label", "talkback/src/main/res/values/strings.xml"),
-              ("permission_braille_display_description", "talkback/src/main/res/values/strings.xml"),
-              ("external_display_channel", "braille/brailledisplay/src/phone/res/values/strings.xml"),
-              ("external_display_ask_title", "braille/brailledisplay/src/phone/res/values/strings.xml"),
-              ("external_display_ask_text", "braille/brailledisplay/src/phone/res/values/strings.xml"),
-              ("external_display_warning", "braille/brailledisplay/src/phone/res/values/strings.xml"),
-              ("external_display_allow", "braille/brailledisplay/src/phone/res/values/strings.xml"),
-              ("external_display_deny", "braille/brailledisplay/src/phone/res/values/strings.xml"),
-              ("external_display_in_use_title", "braille/brailledisplay/src/phone/res/values/strings.xml"),
-              ("external_display_in_use_text", "braille/brailledisplay/src/phone/res/values/strings.xml"),
-              ("external_displays_title", "braille/brailledisplay/src/phone/res/values/strings.xml"),
-              ("external_displays_summary", "braille/brailledisplay/src/phone/res/values/strings.xml"),
-              ("external_displays_none", "braille/brailledisplay/src/phone/res/values/strings.xml"),
-              ("title_clear_selection", "talkback/src/main/res/values/strings.xml"),
-              ("script_sources", "talkback/src/main/res/values/strings_scripts.xml"),
-              ("script_sources_none", "talkback/src/main/res/values/strings_scripts.xml"),
-              ("script_source_add", "talkback/src/main/res/values/strings_scripts.xml"),
-              ("script_source_add_button", "talkback/src/main/res/values/strings_scripts.xml"),
-              ("script_source_hint", "talkback/src/main/res/values/strings_scripts.xml"),
-              ("script_source_invalid", "talkback/src/main/res/values/strings_scripts.xml"),
-              ("script_source_exists", "talkback/src/main/res/values/strings_scripts.xml"),
-              ("script_source_loading", "talkback/src/main/res/values/strings_scripts.xml"),
-              ("script_source_empty", "talkback/src/main/res/values/strings_scripts.xml"),
-              ("script_source_failed", "talkback/src/main/res/values/strings_scripts.xml"),
-              ("script_source_retry", "talkback/src/main/res/values/strings_scripts.xml"),
-              ("script_source_downloading", "talkback/src/main/res/values/strings_scripts.xml"),
-              ("script_source_remove", "talkback/src/main/res/values/strings_scripts.xml"),
-              ("script_source_remove_title", "talkback/src/main/res/values/strings_scripts.xml"),
-              ("script_source_remove_message", "talkback/src/main/res/values/strings_scripts.xml"),
+              ("battery_optimization_notification_title", "talkback/src/main/res/values/strings.xml", 177),
+              ("battery_optimization_notification_text", "talkback/src/main/res/values/strings.xml", 179),
+              ("permission_braille_display_label", "talkback/src/main/res/values/strings.xml", 870),
+              ("permission_braille_display_description", "talkback/src/main/res/values/strings.xml", 872),
+              ("external_display_channel", "braille/brailledisplay/src/phone/res/values/strings.xml", 68),
+              ("external_display_ask_title", "braille/brailledisplay/src/phone/res/values/strings.xml", 72),
+              ("external_display_ask_text", "braille/brailledisplay/src/phone/res/values/strings.xml", 74),
+              ("external_display_warning", "braille/brailledisplay/src/phone/res/values/strings.xml", 79),
+              ("external_display_allow", "braille/brailledisplay/src/phone/res/values/strings.xml", 81),
+              ("external_display_deny", "braille/brailledisplay/src/phone/res/values/strings.xml", 83),
+              ("external_display_in_use_title", "braille/brailledisplay/src/phone/res/values/strings.xml", 86),
+              ("external_display_in_use_text", "braille/brailledisplay/src/phone/res/values/strings.xml", 88),
+              ("external_displays_title", "braille/brailledisplay/src/phone/res/values/strings.xml", 90),
+              ("external_displays_summary", "braille/brailledisplay/src/phone/res/values/strings.xml", 92),
+              ("external_displays_none", "braille/brailledisplay/src/phone/res/values/strings.xml", 94),
+              ("title_clear_selection", "talkback/src/main/res/values/strings.xml", 471),
+              ("script_sources", "talkback/src/main/res/values/strings_scripts.xml", 256),
+              ("script_sources_none", "talkback/src/main/res/values/strings_scripts.xml", 258),
+              ("script_source_add", "talkback/src/main/res/values/strings_scripts.xml", 260),
+              ("script_source_add_button", "talkback/src/main/res/values/strings_scripts.xml", 262),
+              ("script_source_hint", "talkback/src/main/res/values/strings_scripts.xml", 264),
+              ("script_source_invalid", "talkback/src/main/res/values/strings_scripts.xml", 266),
+              ("script_source_exists", "talkback/src/main/res/values/strings_scripts.xml", 268),
+              ("script_source_loading", "talkback/src/main/res/values/strings_scripts.xml", 270),
+              ("script_source_empty", "talkback/src/main/res/values/strings_scripts.xml", 272),
+              ("script_source_failed", "talkback/src/main/res/values/strings_scripts.xml", 274),
+              ("script_source_retry", "talkback/src/main/res/values/strings_scripts.xml", 276),
+              ("script_source_downloading", "talkback/src/main/res/values/strings_scripts.xml", 278),
+              ("script_source_remove", "talkback/src/main/res/values/strings_scripts.xml", 280),
+              ("script_source_remove_title", "talkback/src/main/res/values/strings_scripts.xml", 282),
+              ("script_source_remove_message", "talkback/src/main/res/values/strings_scripts.xml", 284),
           ]
 
           path = Path("lint-baseline.xml")
           text = path.read_text(encoding="utf-8")
           token = "&quot;cs&quot; (Czech)"
+          blocks = re.findall(r'<issue\b.*?</issue>', text, flags=re.S)
           changed = 0
 
-          for key, source in entries:
+          for key, source, line in entries:
               marker = f'message="&quot;{key}&quot; is not translated'
-              blocks = re.findall(r'<issue\b.*?</issue>', text, flags=re.S)
-              candidates = [b for b in blocks if marker in b and source in b]
+              file_marker = f'file="{source}"'
+              line_marker = f'line="{line}"'
+              candidates = [
+                  b for b in blocks
+                  if marker in b and file_marker in b and line_marker in b
+              ]
               if len(candidates) != 1:
-                  raise SystemExit(f"{key} / {source}: expected exactly one matching baseline block, found {len(candidates)}")
+                  same_key = [b for b in blocks if marker in b]
+                  locations = []
+                  for b in same_key:
+                      locations.extend(re.findall(r'<location\b[^>]*/>', b))
+                  raise SystemExit(
+                      f"{key}: exact lint location {source}:{line} matched {len(candidates)} baseline blocks; "
+                      f"baseline locations for this key: {locations}"
+                  )
+
               block = candidates[0]
-              token_count = block.count(token)
-              if token_count != 1:
-                  raise SystemExit(f"{key}: expected Czech locale exactly once, found {token_count}")
+              if block.count(token) != 1:
+                  raise SystemExit(
+                      f"{key} at {source}:{line}: expected Czech locale exactly once, "
+                      f"found {block.count(token)}"
+                  )
+
               if f", {token}" in block:
                   block2 = block.replace(f", {token}", "", 1)
               elif f"{token}, " in block:
                   block2 = block.replace(f"{token}, ", "", 1)
               else:
-                  raise SystemExit(f"{key}: unexpected Czech locale placement")
+                  raise SystemExit(f"{key} at {source}:{line}: unexpected Czech locale placement")
+
               if text.count(block) != 1:
-                  raise SystemExit(f"{key}: selected issue block is not unique in baseline")
+                  raise SystemExit(f"{key} at {source}:{line}: selected baseline block is not unique")
               text = text.replace(block, block2, 1)
+              blocks[blocks.index(block)] = block2
               changed += 1
 
           if changed != 31:
-              raise SystemExit(f"Expected 31 baseline updates, got {changed}")
-          path.write_text(text, encoding="utf-8")
-          print(f"Updated {changed} exact MissingTranslation baseline entries")
+              raise SystemExit(f"Expected exactly 31 baseline updates, got {changed}")
 
-      - name: Validate patch and remove temporary files
+          path.write_text(text, encoding="utf-8")
+          print(f"Updated exactly {changed} MissingTranslation baseline entries using current lint locations")
+
+      - name: Validate and remove temporary validation files
         run: |
           git diff --check
           rm .github/workflows/refresh-czech-lint-baseline.yml
           rm -f .ci-trigger
-          git status --short
+          changed=$(git status --short | sed 's/^...//' | sort)
+          printf '%s\n' "$changed"
+          test "$changed" = "$(printf '%s\n' '.ci-trigger' '.github/workflows/refresh-czech-lint-baseline.yml' 'lint-baseline.xml' | sort)"
 
-      - name: Commit refreshed baseline
+      - name: Commit final baseline refresh
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
