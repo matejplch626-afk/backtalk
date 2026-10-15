@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Print exact baseline locations for Czech translation keys
+      - name: Print exact stale baseline entries
         shell: python
         run: |
           from pathlib import Path
@@ -52,7 +52,7 @@ jobs:
               "script_source_remove_title",
               "script_source_remove_message",
           ]
-
+          token = "&quot;cs&quot; (Czech)"
           text = Path("lint-baseline.xml").read_text(encoding="utf-8")
           blocks = re.findall(r'<issue\b.*?</issue>', text, flags=re.S)
 
@@ -62,9 +62,11 @@ jobs:
               print(f"KEY {key} COUNT {len(matches)}")
               for i, block in enumerate(matches, 1):
                   locations = re.findall(r'<location\b[^>]*/>', block, flags=re.S)
-                  print(f"  MATCH {i}")
+                  message = re.search(r'message="([^"]*)"', block, flags=re.S)
+                  print(f"  MATCH {i} CZECH_TOKEN_COUNT {block.count(token)}")
                   for location in locations:
-                      compact = ' '.join(location.split())
-                      print(f"    {compact}")
+                      print("    LOCATION " + ' '.join(location.split()))
+                  if message:
+                      print("    MESSAGE " + ' '.join(message.group(1).split()))
 
           print("Diagnostic only: no files were modified.")
