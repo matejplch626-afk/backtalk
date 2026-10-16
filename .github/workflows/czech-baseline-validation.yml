@@ -26,6 +26,9 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v6
 
+      - name: Restore lint tool executable permission
+        run: chmod +x tools/lint/ktfmt
+
       - name: Regenerate lint baseline from actual lint output
         run: ./gradlew updateLintBaselinePhoneDebug --console=plain
 
