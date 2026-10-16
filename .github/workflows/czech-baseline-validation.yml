@@ -1,0 +1,129 @@
+name: Czech baseline validation
+
+on:
+  push:
+    branches: [czech-external-displays]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: czech-baseline-validation
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Regenerate lint baseline from actual lint output
+        run: ./gradlew updateLintBaselinePhoneDebug --console=plain
+
+      - name: Validate baseline delta
+        shell: python
+        run: |
+          import re
+          import subprocess
+          import xml.etree.ElementTree as ET
+
+          expected = {
+              "external_display_channel",
+              "external_display_ask_title",
+              "external_display_ask_text",
+              "external_display_warning",
+              "external_display_allow",
+              "external_display_deny",
+              "external_display_in_use_title",
+              "external_display_in_use_text",
+              "external_displays_title",
+              "external_displays_summary",
+              "external_displays_none",
+          }
+          source = "braille/brailledisplay/src/phone/res/values/strings.xml"
+
+          before = subprocess.check_output(
+              ["git", "show", "HEAD:lint-baseline.xml"], text=True
+          )
+          after = open("lint-baseline.xml", encoding="utf-8").read()
+
+          def issues(text):
+              root = ET.fromstring(text)
+              out = {}
+              for issue in root.findall("issue"):
+                  if issue.get("id") != "MissingTranslation":
+                      continue
+                  msg = issue.get("message", "")
+                  match = re.match(r'"([^"]+)" is not translated in ', msg)
+                  if not match:
+                      continue
+                  loc = issue.find("location")
+                  if loc is None:
+                      continue
+                  key = (match.group(1), loc.get("file"))
+                  out[key] = (
+                      msg,
+                      issue.get("errorLine1", ""),
+                      issue.get("errorLine2", ""),
+                      loc.get("line", ""),
+                      loc.get("column", ""),
+                  )
+              return out
+
+          old = issues(before)
+          new = issues(after)
+          changed = {
+              key for key in old.keys() | new.keys()
+              if old.get(key) != new.get(key)
+          }
+          expected_changed = {(key, source) for key in expected}
+
+          if changed != expected_changed:
+              print("Unexpected baseline delta.")
+              print("Expected:", sorted(expected_changed))
+              print("Actual:", sorted(changed))
+              raise SystemExit(1)
+
+          for key in expected:
+              item = new.get((key, source))
+              if item is None:
+                  raise SystemExit(f"Missing regenerated baseline issue for {key}")
+              if '"cs" (Czech)' in item[0]:
+                  raise SystemExit(f"Czech still present in baseline issue for {key}")
+
+          print("Validated exactly 11 expected Czech MissingTranslation baseline updates.")
+
+      - name: Commit regenerated baseline locally
+        id: baseline
+        run: |
+          if git diff --quiet -- lint-baseline.xml; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add lint-baseline.xml
+            git commit -m "Refresh lint baseline for Czech external display strings"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build debug APKs
+        run: ./gradlew assembleDebug --console=plain
+
+      - name: Run unit tests
+        run: ./gradlew testPhoneDebugUnitTest --console=plain
+
+      - name: Run lint
+        run: ./gradlew :lintPhoneDebug --console=plain
+
+      - name: Push validated baseline
+        if: steps.baseline.outputs.changed == 'true'
+        run: git push origin HEAD:czech-external-displays
