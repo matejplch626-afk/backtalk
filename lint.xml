@@ -46,5 +46,9 @@
         <ignore regexp="phonetic_letters_mode_after_letter_delay" />
         <ignore regexp="phonetic_letters_mode_after_letter_no_delay" />
         <ignore regexp="phonetic_letters_mode_instead_of_letter" />
+        <ignore regexp="title_pref_touch_activation" />
+        <ignore regexp="title_pref_navigation" />
+        <ignore regexp="title_pref_focus_new_windows" />
+        <ignore regexp="title_pref_category_apps" />
     </issue>
 </lint>
