@@ -1,0 +1,107 @@
+name: Fix Czech notification lint
+
+on:
+  push:
+    branches: [czech-notification-list]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: czech-notification-list
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Apply exact Czech lint repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          import xml.etree.ElementTree as ET
+
+          cs_path = Path('talkback/src/main/res/values-cs/strings_notification_list.xml')
+          baseline_path = Path('lint-baseline.xml')
+
+          # The validation PR intentionally contains exactly the 23 new Czech resource keys.
+          tree = ET.parse(cs_path)
+          names = [e.attrib['name'] for e in tree.getroot() if e.tag in ('string', 'plurals')]
+          if len(names) != 23 or len(set(names)) != 23:
+              raise SystemExit(f'Expected exactly 23 unique Czech resource keys, found {len(names)} / {len(set(names))}.')
+
+          # Fix the one genuine Czech lint error: Czech plurals require quantity="many".
+          cs = cs_path.read_text(encoding='utf-8')
+          many_line = '        <item quantity="many">%d oznámení</item>'
+          if many_line not in cs:
+              needle = '        <item quantity="few">%d oznámení</item>\n        <item quantity="other">%d oznámení</item>'
+              replacement = '        <item quantity="few">%d oznámení</item>\n' + many_line + '\n        <item quantity="other">%d oznámení</item>'
+              if cs.count(needle) != 1:
+                  raise SystemExit('Could not uniquely locate the Czech notification plural to add quantity="many".')
+              cs = cs.replace(needle, replacement, 1)
+              cs_path.write_text(cs, encoding='utf-8')
+          ET.parse(cs_path)
+
+          # Proven project procedure: for each newly translated key, keep the existing
+          # MissingTranslation baseline issue but remove only Czech from its language list.
+          baseline = baseline_path.read_text(encoding='utf-8')
+          issue_re = re.compile(r'    <issue\n        id="MissingTranslation"\n.*?    </issue>', re.S)
+          cs_token = '&quot;cs&quot; (Czech)'
+          changed = []
+
+          for key in names:
+              matches = [m for m in issue_re.finditer(baseline) if f'&quot;{key}&quot;' in m.group(0)]
+              if len(matches) != 1:
+                  raise SystemExit(f'Expected exactly one MissingTranslation baseline block for {key}, found {len(matches)}.')
+              m = matches[0]
+              block = m.group(0)
+              if block.count(cs_token) != 1:
+                  raise SystemExit(f'Expected Czech exactly once in baseline block for {key}, found {block.count(cs_token)}.')
+              if ', ' + cs_token in block:
+                  new_block = block.replace(', ' + cs_token, '', 1)
+              elif cs_token + ', ' in block:
+                  new_block = block.replace(cs_token + ', ', '', 1)
+              else:
+                  raise SystemExit(f'Could not safely remove Czech from baseline block for {key}.')
+              baseline = baseline[:m.start()] + new_block + baseline[m.end():]
+              changed.append(key)
+
+          if len(changed) != 23:
+              raise SystemExit(f'Expected 23 baseline updates, made {len(changed)}.')
+          baseline_path.write_text(baseline, encoding='utf-8')
+          ET.parse(baseline_path)
+          print('Updated exactly 23 MissingTranslation baseline entries and added Czech quantity="many".')
+          PY
+
+          git diff --check
+
+      - name: Build debug APKs
+        run: ./gradlew assembleDebug --console=plain
+
+      - name: Run unit tests
+        run: ./gradlew testPhoneDebugUnitTest --console=plain
+
+      - name: Run lint
+        run: ./gradlew :lintPhoneDebug --console=plain
+
+      - name: Commit verified repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lint-baseline.xml talkback/src/main/res/values-cs/strings_notification_list.xml
+          git diff --cached --check
+          git commit -m "Fix Czech notification list lint baseline"
+          git push origin HEAD:czech-notification-list
