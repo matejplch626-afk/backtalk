@@ -2,7 +2,7 @@ name: Repair Czech notification list
 
 on:
   workflow_run:
-    workflows: ["Build"]
+    workflows: ["Build", "Fix Czech notification lint"]
     types: [completed]
 
 permissions:
@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   repair:
-    if: github.event.workflow_run.id == 39857934986
+    if: github.event.workflow_run.id == 39857934986 || github.event.workflow_run.id == 39857926483
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
