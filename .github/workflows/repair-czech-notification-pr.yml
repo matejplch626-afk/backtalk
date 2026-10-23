@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   repair:
-    if: github.head_ref == 'czech-notification-list'
+    if: github.head_ref == 'czech-notification-repair-trigger'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
