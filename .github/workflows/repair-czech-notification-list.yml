@@ -1,6 +1,8 @@
 name: Repair Czech notification list
 
 on:
+  schedule:
+    - cron: '*/5 * * * *'
   workflow_run:
     workflows: ["Build", "Fix Czech notification lint"]
     types: [completed]
@@ -11,7 +13,7 @@ permissions:
 
 jobs:
   repair:
-    if: github.event.workflow_run.id == 39857934986 || github.event.workflow_run.id == 39857926483
+    if: github.event_name == 'schedule' || github.event.workflow_run.id == 39857934986 || github.event.workflow_run.id == 39857926483
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
