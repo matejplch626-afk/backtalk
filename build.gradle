@@ -68,22 +68,8 @@ android {
     }
 }
 
-// Temporary CI-only experiment: regenerate the canonical lint baseline, then remove only
-// diagnostic display attributes to test whether lint can match a transport-safe compact form.
-tasks.register("compactGeneratedLintBaseline") {
-    dependsOn("updateLintBaselinePhoneDebug")
-    doLast {
-        def baselineFile = file("lint-baseline.xml")
-        def text = baselineFile.getText("UTF-8")
-        text = text.replaceAll(/ message="[^"]*"/, "")
-        text = text.replaceAll(/ errorLine1="[^"]*"/, "")
-        text = text.replaceAll(/ errorLine2="[^"]*"/, "")
-        text = text.replaceAll(/ line="[^"]*"/, "")
-        text = text.replaceAll(/ column="[^"]*"/, "")
-        baselineFile.setText(text, "UTF-8")
-    }
-}
-
+// Temporary CI-only hook: regenerate the canonical lint baseline on a working upstream runner and
+// include the generated file in the APK artifact. This block is removed before the PR is marked ready.
 tasks.register("captureGeneratedLintBaseline") {
     doLast {
         copy {
@@ -95,6 +81,6 @@ tasks.register("captureGeneratedLintBaseline") {
 }
 
 tasks.matching { it.name == "assembleDebug" }.configureEach {
-    dependsOn("compactGeneratedLintBaseline")
+    dependsOn("updateLintBaselinePhoneDebug")
     finalizedBy("captureGeneratedLintBaseline")
 }
