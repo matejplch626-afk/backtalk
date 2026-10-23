@@ -24,6 +24,7 @@
     <plurals name="notification_list_group_count">
         <item quantity="one">%d oznámení</item>
         <item quantity="few">%d oznámení</item>
+        <item quantity="many">%d oznámení</item>
         <item quantity="other">%d oznámení</item>
     </plurals>
     <string name="shortcut_system_notifications">Systémová oznamovací lišta</string>
