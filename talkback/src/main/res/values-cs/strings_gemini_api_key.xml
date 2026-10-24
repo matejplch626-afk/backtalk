@@ -8,7 +8,6 @@
     <string name="gemini_api_key_hint">Klíč API</string>
     <string name="gemini_api_key_save">Uložit</string>
     <string name="gemini_api_key_get">Získat klíč</string>
-    <string name="gemini_api_terms_link">Doplňkové smluvní podmínky služby Gemini API</string>
 
     <string name="title_pref_ai_service">Jiná služba AI</string>
     <string name="summary_pref_ai_service_set">Popis obrázku a popis obrazovky používají <xliff:g id="model" example="google/gemma-3-27b-it">%1$s</xliff:g></string>
